@@ -8,7 +8,14 @@ const ticketRoutes = require('./routes/tickets');
 const customerRoutes = require('./routes/cutomers');
 
 
-app.use(cors());
+const corsOptions = {
+    origin: [
+        "https://food-app-mern-base-omega.vercel.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+};
+
+app.use(cors(corsOptions));
 
 
 app.use(express.json());
@@ -28,7 +35,8 @@ app.use("/api",ticketRoutes)
 app.use("/api",customerRoutes)
 
 
+module.exports = app;
 
-app.listen(3000, () => {
-    console.log('Server running on http://localhost:3000');
-});
+// app.listen(3000, () => {
+//     console.log('Server running on http://localhost:3000');
+// });
