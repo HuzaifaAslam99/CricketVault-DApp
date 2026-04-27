@@ -26,7 +26,7 @@ app.use(express.json());
 const connectDB = async () => {
   try {
     // This is the variable you have in Vercel
-    await mongoose.connect(process.env.TICKET_BOOKING_DB_URI, {
+    await mongoose.connect(process.env.TICKET_Booking_DB_URI, {
       serverSelectionTimeoutMS: 5000, // Stop waiting after 5 seconds
     });
     console.log("MongoDB Connected for Cricket Vault...");
