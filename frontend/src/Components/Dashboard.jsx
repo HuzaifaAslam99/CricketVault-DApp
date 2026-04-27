@@ -15,6 +15,8 @@ const TicketCard = () => {
         const fetchTickets = async () => {
             try {
                 const response = await axios.get(`${URL}/api/tickets`)
+                console.log("Response: ",response.data);
+                
                 setTicketArray(response.data);
             } catch (error) {
                 console.error("Error fetching Tickets", error);
