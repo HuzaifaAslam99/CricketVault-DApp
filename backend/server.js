@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const app = express();
 
 const ticketRoutes = require('./routes/tickets');
-const customerRoutes = require('./routes/cutomers');
+const customerRoutes = require('./routes/customers');
 
 
 const corsOptions = {
@@ -23,15 +23,20 @@ app.use(express.json());
 
 // console.log("My DB URL is: ", process.env.TICKET_BOOKING_DB_URI);
 
-const uri = process.env.TICKET_BOOKING_DB_URI;
+const connectDB = async () => {
+  try {
+    // This is the variable you have in Vercel
+    await mongoose.connect(process.env.TICKET_BOOKING_DB_URI, {
+      serverSelectionTimeoutMS: 5000, // Stop waiting after 5 seconds
+    });
+    console.log("MongoDB Connected for Cricket Vault...");
+  } catch (err) {
+    console.error("Connection failed, retrying in 2 seconds...", err);
+    setTimeout(connectDB, 2000);
+  }
+};
 
-if (!uri) {
-    console.error("ERROR: TICKET_BOOKING_DB_URI is not defined in Environment Variables!");
-}
-
-mongoose.connect(uri)
-  .then(() => console.log('Successfully connected to MongoDB'))
-  .catch(err => console.error('Database connection error:', err));
+connectDB();
 
 
 // mongoose.connect(process.env.TICKET_BOOKING_DB_URI)
