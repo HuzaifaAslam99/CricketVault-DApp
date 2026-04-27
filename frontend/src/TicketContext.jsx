@@ -11,7 +11,7 @@ export const TicketProvider = ({ children }) => {
     const [ticket, setTicket] = useState(null);
     const [category, setCategory] = useState(null);
 
-    const URL = "cricket-vault-dapp-backend.vercel.app"
+    const URL = "https://cricket-vault-dapp-backend.vercel.app"
 
   return (
     <TicketContext.Provider value={{ showCart, setShowCart, showMessage, setMessage, showAlert, setAlert,
