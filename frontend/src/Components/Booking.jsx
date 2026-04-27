@@ -6,7 +6,7 @@ import { contract_address, ticket_abi } from "../constants";
 
 
 const Booking = () => {
-    const { setShowCart, showMessage, setMessage, setAlert, ticket, category} = ticketCart();
+    const { setShowCart, showMessage, setMessage, setAlert, ticket, category, URL} = ticketCart();
 
     
     const [customer, setCustomer] = useState({ firstName:"", lastName:"", email:"", phone:"", city:"",
@@ -77,7 +77,7 @@ const Booking = () => {
             const receipt = await tx.wait();
             const transaction_hash = receipt.hash;
 
-            const response = await axios.post(`http://localhost:3000/api/customers`, {
+            const response = await axios.post(`${URL}/api/customers`, {
                 firstName: customer.firstName,
                 lastName: customer.lastName,
                 email: customer.email,

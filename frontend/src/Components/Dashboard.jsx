@@ -2,17 +2,19 @@
 import {useEffect, useState} from "react"
 import axios from "axios"
 import { Link} from "react-router-dom"; 
-
+import { ticketCart } from "../TicketContext";
 import icc from "../assets/img/icc.png";
 
 const TicketCard = () => {
+
+    const {URL} = ticketCart()
 
     const [TicketArray, setTicketArray] = useState([])
 
     useEffect(() => {
         const fetchTickets = async () => {
             try {
-                const response = await axios.get(`http://localhost:3000/api/tickets`)
+                const response = await axios.get(`${URL}/api/tickets`)
                 setTicketArray(response.data);
             } catch (error) {
                 console.error("Error fetching Tickets", error);

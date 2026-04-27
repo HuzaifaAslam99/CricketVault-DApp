@@ -7,7 +7,7 @@ import icc from "../assets/img/icc.png";
 
 const TicketEnvelope = () => {
     // Accessing context
-    const { showCart, setShowCart, showMessage, showAlert, setAlert, ticket, setTicket, setCategory } = ticketCart();
+    const { showCart, setShowCart, showMessage, showAlert, setAlert, ticket, setTicket, setCategory, URL } = ticketCart();
 
     const { match } = useParams();
 
@@ -22,7 +22,7 @@ const TicketEnvelope = () => {
         if (!match) return; 
         const fetchOrderDetails = async () => {
             try {
-                const response = await axios.get(`http://localhost:3000/api/tickets/match`, {
+                const response = await axios.get(`${URL}/api/tickets/match`, {
                     params: { match }
                 });
                 setTicket(response.data);
