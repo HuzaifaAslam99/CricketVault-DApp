@@ -10,9 +10,10 @@ const customerRoutes = require('./routes/cutomers');
 
 const corsOptions = {
     origin: [
-        "https://food-app-mern-base-omega.vercel.app",
+        "https://cricket-vault-dapp.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true 
 };
 
 app.use(cors(corsOptions));
