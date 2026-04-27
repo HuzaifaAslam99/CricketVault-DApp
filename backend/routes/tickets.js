@@ -3,11 +3,8 @@ const express = require("express")
 const router = express.Router()
 
 router.get("/tickets", async (req, res) => {
-    try {
-        // console.log("We are in th Tickets");
-        
+    try {        
         const allTickets = await Tickets.find()
-        // console.log(allTickets);
         
         if ((allTickets.length === 0)){
             return res.status(400).json({ message: "Tickets not available"});
