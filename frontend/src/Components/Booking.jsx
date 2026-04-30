@@ -92,7 +92,9 @@ const Booking = () => {
 
             const tx = await contract.buyTicket(ticketId, ipfsHash, { value: amountEthWei, gasLimit: 300000 });
             const receipt = await tx.wait();
-            const transaction_hash = receipt.hash;
+
+            console.log("Transaction confirmed:", receipt.hash);
+            // const transaction_hash = receipt.hash;
 
             // const response = await axios.post(`${URL}/api/customers`, {
             //     firstName: customer.firstName,
