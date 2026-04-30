@@ -69,7 +69,7 @@ const Booking = () => {
                 category: category.label,
                 amount: total_amount,
                 wallet_address : signer.address,
-                transaction_hash: transaction_hash,
+                // transaction_hash: transaction_hash,
             });
 
             const ticketId = response.data.ticket_id

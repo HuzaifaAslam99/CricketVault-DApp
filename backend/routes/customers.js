@@ -22,7 +22,7 @@ router.post("/customersBooking/initiate", async (req, res) => {
             ticket_category : req.body.category,
             total_amount : req.body.amount,
             wallet_address : req.body.wallet_address,
-            transaction_hash: req.body.transaction_hash,
+            // transaction_hash: req.body.transaction_hash,
             ticket_id: ticketId,
             ipfs_hash: "ipfs hash"
         });
