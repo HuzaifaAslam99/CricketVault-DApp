@@ -27,33 +27,9 @@ router.post("/customersBooking/initiate", async (req, res) => {
             ipfs_hash: "ipfs hash"
         });
 
-        // const ipfsMetadata = {
-        //     wallet_address : req.body.wallet_address,
-        //     ticket_id: ticketId,
-        //     total_tickets: req.body.quantity,
-        //     ticket_category : req.body.category,
-        //     total_amount : req.body.amount,
-        //     timestamp: new Date().toISOString()
-        // };
-
-        // 2. Upload to Pinata
-
-        // const upload = await pinata.upload.json(ipfsMetadata);
-
-        // const cid = upload.IpfsHash;
-
-        // if (!cid) {
-        //     throw new Error("Pinata did not return an IpfsHash.");
-        // }
-
-        // newCustomer.ipfsHash = cid;
-
         const savedCustomer = await newCustomer.save();
 
-        res.status(201).json({
-            message: "Booking successful!",
-            data: savedCustomer
-        });
+        res.status(201).json(savedCustomer);
         
     } catch (err) {
         console.error("Error saving customer:", err);
