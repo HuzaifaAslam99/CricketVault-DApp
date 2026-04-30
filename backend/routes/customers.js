@@ -36,7 +36,11 @@ router.post("/customers", async (req, res) => {
         };
 
         // 2. Upload to Pinata
-        const upload = await pinata.upload.json(ipfsMetadata);
+        // const upload = await pinata.upload.json(ipfsMetadata);
+        const upload = await pinata.upload.json(ipfsMetadata).catch(pError => {
+            console.error("Pinata Specific Error:", pError);
+            throw new Error("Pinata Upload Failed: " + pError.message);
+        });
         const cid = upload.IpfsHash;
 
         if (!cid) {
