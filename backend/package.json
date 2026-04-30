@@ -3,6 +3,7 @@
     "@pinata/sdk": "^2.1.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
+    "ethers": "^6.16.0",
     "express": "^5.2.1",
     "mongoose": "^9.5.0",
     "nodemon": "^3.1.14"

@@ -6,7 +6,7 @@ const app = express();
 
 const ticketRoutes = require('./routes/tickets');
 const customerRoutes = require('./routes/customers');
-// const webhookRoutes = require('./routes/webhook');
+const webhookRoutes = require('./routes/webhook');
 
 
 const corsOptions = {
@@ -70,7 +70,7 @@ app.get("/", (req, res) => {
 
 app.use("/api",ticketRoutes)
 app.use("/api",customerRoutes)
-// app.use("/api", webhookRoutes)
+app.use("/api", webhookRoutes)
 
 
 module.exports = app;
