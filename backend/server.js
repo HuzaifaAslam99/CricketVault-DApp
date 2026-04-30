@@ -70,7 +70,7 @@ app.get("/", (req, res) => {
 
 app.use("/api",ticketRoutes)
 app.use("/api",customerRoutes)
-app.use("/api", webhookRoutes)
+// app.use("/api", webhookRoutes)
 
 
 module.exports = app;
