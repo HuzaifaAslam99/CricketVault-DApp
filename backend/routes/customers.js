@@ -6,7 +6,7 @@ const router = express.Router()
 // const { PinataSDK } = require("pinata-web3");
 // const pinata = new PinataSDK({ pinataJwt: process.env.PINATA_JWT });
 
-router.post("/customers", async (req, res) => {
+router.post("/customersBooking/initiate", async (req, res) => {
     try {
 
         const ticketId = crypto.randomBytes(4).toString("hex");
@@ -23,7 +23,8 @@ router.post("/customers", async (req, res) => {
             total_amount : req.body.amount,
             wallet_address : req.body.wallet_address,
             transaction_hash: req.body.transaction_hash,
-            ticket_id: ticketId
+            ticket_id: ticketId,
+            ipfs_hash: "ipfs hash"
         });
 
         // const ipfsMetadata = {

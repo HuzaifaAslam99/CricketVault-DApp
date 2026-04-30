@@ -6,6 +6,7 @@ const app = express();
 
 const ticketRoutes = require('./routes/tickets');
 const customerRoutes = require('./routes/customers');
+const webhookRoutes = require('./routes/webhook');
 
 
 const corsOptions = {
@@ -19,6 +20,18 @@ const corsOptions = {
 // Reverting to clean state
 
 app.use(cors(corsOptions));
+
+// app.post("/api/webhook", express.raw({ type: "application/json" }), (req, res, next) => {
+//   try {
+//       console.log("Raw Binary Data:", req.body);
+
+//       req.rawBody = req.body.toString();
+//       req.body = JSON.parse(req.rawBody);
+//       next();
+//   } catch (err) {
+//       res.status(400).send("Invalid JSON");
+//   }
+// });
 
 
 app.use(express.json());
@@ -52,6 +65,7 @@ app.get("/", (req, res) => {
 
 app.use("/api",ticketRoutes)
 app.use("/api",customerRoutes)
+app.use("/api", webhookRoutes)
 
 
 module.exports = app;

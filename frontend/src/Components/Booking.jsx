@@ -58,6 +58,23 @@ const Booking = () => {
 
         try {
 
+            const response = await axios.post(`${URL}/api/customersBooking/initiate`, {
+                firstName: customer.firstName,
+                lastName: customer.lastName,
+                email: customer.email,
+                phone: customer.phone,
+                city: customer.city,
+                address: customer.address,
+                quantity: customer.quantity,
+                category: category.label,
+                amount: total_amount,
+                wallet_address : signer.address,
+                transaction_hash: transaction_hash,
+            });
+
+            const ticketId = response.data.ticket_id
+            const ipfsHash = orderResponse.data.ipfs_hash;
+
             const currentPrice = await fetchEthPrice();
             const ethValue = (total_amount / currentPrice).toFixed(18);
             const amountEthWei = ethers.parseEther(ethValue);
@@ -73,23 +90,23 @@ const Booking = () => {
 
             // setProcessingMessage("Confirming ETH Payment...")
 
-            const tx = await contract.buyTicket({ value: amountEthWei, gasLimit: 300000 });
+            const tx = await contract.buyTicket(ticketId, ipfsHash, { value: amountEthWei, gasLimit: 300000 });
             const receipt = await tx.wait();
             const transaction_hash = receipt.hash;
 
-            const response = await axios.post(`${URL}/api/customers`, {
-                firstName: customer.firstName,
-                lastName: customer.lastName,
-                email: customer.email,
-                phone: customer.phone,
-                city: customer.city,
-                address: customer.address,
-                quantity: customer.quantity,
-                category: category.label,
-                amount: total_amount,
-                wallet_address : signer.address,
-                transaction_hash: transaction_hash,
-            });
+            // const response = await axios.post(`${URL}/api/customers`, {
+            //     firstName: customer.firstName,
+            //     lastName: customer.lastName,
+            //     email: customer.email,
+            //     phone: customer.phone,
+            //     city: customer.city,
+            //     address: customer.address,
+            //     quantity: customer.quantity,
+            //     category: category.label,
+            //     amount: total_amount,
+            //     wallet_address : signer.address,
+            //     transaction_hash: transaction_hash,
+            // });
 
             setShowCart(false); 
             setMessage("Tickets Successfully Booked")

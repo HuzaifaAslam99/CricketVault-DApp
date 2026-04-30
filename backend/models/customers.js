@@ -19,11 +19,11 @@ const CustomerSchema = new mongoose.Schema({
 
     wallet_address : {type: String},
     transaction_hash: {type: String},
+    ipfs_hash: {type: String},
 
-    OrderBookingTime: { 
-        type: Date, 
-        default: Date.now
-    },
+    BookingTime: {  type: Date, default: Date.now },
+
+    status: { type: String,  default: "pending" },
 
 });
 
