@@ -90,7 +90,7 @@ const Booking = () => {
 
             // setProcessingMessage("Confirming ETH Payment...")
 
-            const tx = await contract.buyTicket(ticketId, ipfsHash, { value: amountEthWei, gasLimit: 300000 });
+            const tx = await contract.buyTicket(ticketId, ipfsHash, { value: amountEthWei, gasLimit: 800000 });
             const receipt = await tx.wait();
 
             console.log("Transaction confirmed:", receipt.hash);
@@ -134,7 +134,7 @@ const Booking = () => {
 
         };
 
-            setProcessingMessage("Verifying database storage...");
+            // setProcessingMessage("Verifying database storage...");
             verifyPaymentStatus(ticketId);
 
 
@@ -145,7 +145,7 @@ const Booking = () => {
         } catch (error) {
             console.error("Error fetching Tickets", error);
             setShowCart(false); 
-            setMessage("Booking Failed. Please try again")
+            setMessage("Booking Cancelled")
             setAlert(true)
         }
     };
