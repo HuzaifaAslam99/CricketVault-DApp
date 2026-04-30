@@ -96,19 +96,46 @@ const Booking = () => {
             console.log("Transaction confirmed:", receipt.hash);
             // const transaction_hash = receipt.hash;
 
-            // const response = await axios.post(`${URL}/api/customers`, {
-            //     firstName: customer.firstName,
-            //     lastName: customer.lastName,
-            //     email: customer.email,
-            //     phone: customer.phone,
-            //     city: customer.city,
-            //     address: customer.address,
-            //     quantity: customer.quantity,
-            //     category: category.label,
-            //     amount: total_amount,
-            //     wallet_address : signer.address,
-            //     transaction_hash: transaction_hash,
-            // });
+
+
+        const verifyPaymentStatus = (ticketId) => {
+            // 1. Create the interval
+            const interval = setInterval(async () => {
+              try {
+                console.log("Polling database for order:", ticketId);
+
+                const response = await axios.get(`${URL}/api/bookingVerify/${ticketId}`)
+                console.log("Response Data: ",response.data.status);
+                
+          
+                if (response.data.status === "paid") {
+                  console.log("Payment Confirmed! Breaking loop.");
+          
+                  clearInterval(interval);
+                  setProcessing(false);
+                  setConfirmOrder(true);
+  
+                }
+              } catch (error) {
+                console.error("Polling error:", error);
+
+              }
+            }, 1000);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                if (isProcessing) {
+                  setProcessing(false);
+                  setMessage("Verification took too long. Please check your orders.");
+                  setAlert(true);
+                }
+            }, 60000);
+
+        };
+
+            setProcessingMessage("Verifying database storage...");
+            verifyPaymentStatus(orderId);
+
 
             setShowCart(false); 
             setMessage("Tickets Successfully Booked")

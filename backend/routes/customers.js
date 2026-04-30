@@ -42,4 +42,21 @@ router.post("/customersBooking/initiate", async (req, res) => {
 
 
 
+
+
+router.get("/bookingVerify/:ticketId", async (req, res) => {
+    try {
+        const { ticketId } = req.params;
+
+        const findCustomer = await Customer.findOne({ticket_id: ticketId});
+        res.status(200).json(findCustomer);
+
+    } catch (err) {
+        console.error("Booking Access Error:", err);
+        res.status(500).json({ message: "Internal Server Error", error: err.message });
+    }
+});
+
+
+
 module.exports = router
