@@ -112,8 +112,8 @@ const Booking = () => {
                   console.log("Payment Confirmed! Breaking loop.");
           
                   clearInterval(interval);
-                  setProcessing(false);
-                  setConfirmOrder(true);
+                //   setProcessing(false);
+                //   setConfirmOrder(true);
   
                 }
               } catch (error) {
@@ -122,19 +122,20 @@ const Booking = () => {
               }
             }, 1000);
 
-            setTimeout(() => {
-                clearInterval(interval);
-                if (isProcessing) {
-                  setProcessing(false);
-                  setMessage("Verification took too long. Please check your orders.");
-                  setAlert(true);
-                }
-            }, 60000);
+            // setTimeout(() => {
+            //     clearInterval(interval);
+            //     if (isProcessing) {
+            //     //   setProcessing(false);
+            //       setMessage("Verification took too long. Please check your orders.");
+            //       setAlert(true);
+            //       return
+            //     }
+            // }, 60000);
 
         };
 
             setProcessingMessage("Verifying database storage...");
-            verifyPaymentStatus(orderId);
+            verifyPaymentStatus(ticketId);
 
 
             setShowCart(false); 
