@@ -16,6 +16,8 @@ const corsOptions = {
     credentials: true 
 };
 
+// Reverting to clean state
+
 app.use(cors(corsOptions));
 
 
