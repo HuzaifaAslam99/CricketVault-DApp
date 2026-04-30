@@ -73,7 +73,7 @@ const Booking = () => {
             });
 
             const ticketId = response.data.ticket_id
-            const ipfsHash = orderResponse.data.ipfs_hash;
+            const ipfsHash = response.data.ipfs_hash;
 
             const currentPrice = await fetchEthPrice();
             const ethValue = (total_amount / currentPrice).toFixed(18);
