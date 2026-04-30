@@ -1,9 +1,10 @@
 const Customer = require('../models/customers');
 const crypto = require("crypto")
-
-
 const express = require("express")
 const router = express.Router()
+
+const { PinataSDK } = require("pinata-web3");
+const pinata = new PinataSDK({ pinataJwt: process.env.PINATA_JWT });
 
 router.post("/customers", async (req, res) => {
     try {
@@ -24,6 +25,25 @@ router.post("/customers", async (req, res) => {
             transaction_hash: req.body.transaction_hash,
             ticket_id: ticketId
         });
+
+        const ipfsMetadata = {
+            wallet_address : req.body.wallet_address,
+            ticket_id: ticketId,
+            total_tickets: req.body.quantity,
+            ticket_category : req.body.category,
+            total_amount : req.body.amount,
+            timestamp: new Date().toISOString()
+        };
+
+        // 2. Upload to Pinata
+        const upload = await pinata.upload.json(ipfsMetadata);
+        const cid = upload.IpfsHash;
+
+        if (!cid) {
+            throw new Error("Pinata did not return an IpfsHash.");
+        }
+
+        newCustomer.ipfsHash = cid;
 
         const savedCustomer = await newCustomer.save();
 
