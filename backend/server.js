@@ -6,7 +6,7 @@ const app = express();
 
 const ticketRoutes = require('./routes/tickets');
 const customerRoutes = require('./routes/customers');
-const webhookRoutes = require('./routes/webhook');
+// const webhookRoutes = require('./routes/webhook');
 
 
 const corsOptions = {
