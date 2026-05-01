@@ -5,9 +5,10 @@ const ethers = require("ethers");
 
 // CRITICAL: The string must exactly match the Solidity signature to produce the correct hash.
 // No spaces between types in the signature hash calculation.
-const CRICKET_VAULT_ABI = [
-    "event Deposit(string ticketId, address indexed user, uint256 amount)"
-];
+
+// const CRICKET_VAULT_ABI = [
+//     "event Deposit(string ticketId, address indexed user, uint256 amount)"
+// ];
 
 router.post("/webhook", async (req, res) => {
     try {
@@ -19,7 +20,9 @@ router.post("/webhook", async (req, res) => {
             return res.status(200).json({ status: "ignored" });
         }
 
-        const iface = new ethers.Interface(CRICKET_VAULT_ABI);
+        const iface = new ethers.Interface([
+            "event Deposit(string ticketId, address indexed user, uint256 amount)"
+        ]);
         const transactionHash = logs[0].transaction?.hash;
 
         const expectedTopic0 = iface.getEvent("Deposit").topicHash.toLowerCase();
