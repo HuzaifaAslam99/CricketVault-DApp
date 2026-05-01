@@ -37,7 +37,7 @@ router.post("/webhook", async (req, res) => {
         }
 
         if (!decoded) {
-            return res.status(200).json({ status: "error", message: `Decoded: ${decoded}` });
+            return res.status(200).json({ status: "error", message: `Logs: ${logs}` });
         }
 
         // 3. Extract data from the decoded object
