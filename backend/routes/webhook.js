@@ -21,6 +21,9 @@ router.post("/webhook", async (req, res) => {
 
         const iface = new ethers.Interface(CRICKET_VAULT_ABI);
         const transactionHash = logs[0].transaction?.hash;
+
+        const expectedTopic0 = iface.getEvent("Deposit").topicHash.toLowerCase();
+        const receivedTopic0 = logs[0].topics[0].toLowerCase();
         
         // 2. Normalize and Decode
         let decoded = null;
