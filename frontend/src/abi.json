@@ -201,7 +201,7 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
+          "indexed": false,
           "internalType": "string",
           "name": "ticketId",
           "type": "string"

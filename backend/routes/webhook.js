@@ -4,7 +4,7 @@ const router = express.Router();
 const ethers = require("ethers");
 
 const CRICKET_VAULT_ABI = [
-  "event Deposit(string indexed ticketId, address indexed user, uint256 amount)"
+  "event Deposit(string ticketId, address indexed user, uint256 amount)"
 ];
 
 router.post("/webhook", async (req, res) => {

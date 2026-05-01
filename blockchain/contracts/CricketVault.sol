@@ -26,7 +26,9 @@ contract CricketVault is ERC721URIStorage, AccessControl {
     mapping(uint256 => TicketRecord) public ticketBookings;
 
     // Events for tracking and frontend integration
-    event Deposit(string indexed ticketId, address indexed user, uint256 amount);
+    // event Deposit(string indexed ticketId, address indexed user, uint256 amount);
+    // Use this version and redeploy
+    event Deposit(string ticketId, address indexed user, uint256 amount);
     event TicketMinted(uint256 indexed tokenId, string ticketId, string ipfsHash);
 
     constructor() ERC721("ICC Champions Trophy", "ICC") {

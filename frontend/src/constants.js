@@ -1,4 +1,4 @@
 import ticketAbi from "./abi.json";
 
-export const contract_address = "0x3a2317960C23772AFCe956BC665Ae0C59Fec1cDA"
+export const contract_address = "0x7Ce5D05474fabA0Cf8910Bd25B2eDe407F11Fc4c"
 export const ticket_abi = ticketAbi;
