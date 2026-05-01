@@ -29,8 +29,18 @@ router.post("/webhook", async (req, res) => {
       return res.status(200).json({ status: "error", message: "ABI Mismatch" });
     }
 
+    // if (!decoded) {
+    //     res.status(200).json({ status: "error", message: `Logs: ${logs}`  });
+    //     res.status(200).json({ status: "error", message: "Decoded as null" });
+    //     return
+    // }
+
     if (!decoded) {
-        return res.status(200).json({ status: "error", message: "Decoded as null" });
+        return res.status(200).json({ 
+            status: "error", 
+            message: "Decoded as null",
+            receivedLogs: logs // This allows you to see the raw data in Postman
+        });
     }
 
     const ticketId = decoded.args.ticketId; 
