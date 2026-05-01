@@ -25,50 +25,52 @@ router.post("/webhook", async (req, res) => {
         //     "event Deposit(string ticketId, address indexed user, uint256 amount)"
         // ]);
 
-        // const iface = new ethers.Interface([
-        //     "event Deposit(string ticketId,address indexed user,uint256 amount)"
-        // ]);
-
-        // const iface = new ethers.Interface([
-        //     "event Deposit(string,address,uint256)"
-        // ]);
 
         const iface = new ethers.Interface(contractAbi);
 
-        // console.log("Topic0:", ethers.id(contractAbi));
-        console.log("Deposit Topic0:", iface.getEvent("Deposit").topicHash);
+// 1. Hardcode the CORRECT hash that the blockchain is actually sending
+const ACTUAL_DEPOSIT_HASH = "0xd327b35e36b3981157588978d60961ff5c09dc2926008abb1dd77b1197a416ed";
 
-        const transactionHash = logs[0].transaction?.hash;
+// 2. SECURITY: Hardcode your contract address to prevent spoofing
+const VAULT_ADDRESS = "0x7Ce5D05474fabA0Cf8910Bd25B2eDe407F11Fc4c".toLowerCase();
 
-        let decoded = null;
+// 3. Find the specific log that matches both your address and the correct hash
+const depositLog = logs.find(log => 
+    log.address.toLowerCase() === VAULT_ADDRESS && 
+    log.topics[0].toLowerCase() === ACTUAL_DEPOSIT_HASH.toLowerCase()
+);
 
-        try {
-            decoded = iface.parseLog(logs[0]);
-        } catch (parseError) {
-            console.log("DECODE FAILED. The ABI does not match the transaction log.");
-            console.log("Log Topics:", logs[0].topics);
-            console.log("Log Data:", logs[0].data);
-            return res.status(200).json({ status: "error", message: "ABI Mismatch" });
-        }
+if (!depositLog) {
+    return res.status(200).json({ 
+        status: "error", 
+        message: "Authentic Deposit log not found in this block" 
+    });
+}
 
-        // if (!decoded) {
-        //     return res.status(200).json({ status: "error", message: `Logs: ${logs}` });
-        // }
-
-        if (!decoded) {
-            const expected = iface.getEvent("Deposit").topicHash;
-            const received = logs[0].topics[0];
+let decoded = null;
+try {
+    // 4. Use parseLog on the found log
+    decoded = iface.parseLog({
+        topics: depositLog.topics,
+        data: depositLog.data
+    });
+} catch (parseError) {
+    // If parseLog still returns null/errors, we fall back to manual decoding
+    const abiCoder = new ethers.AbiCoder();
+    const decodedData = abiCoder.decode(["string", "uint256"], depositLog.data);
     
-            return res.status(200).json({ 
-                status: "error", 
-                message: "Decoded as null",
-                comparison: {
-                    expected: expected,
-                    received: received,
-                    match: expected.toLowerCase() === received.toLowerCase()
-                }
-            });
+    decoded = {
+        args: {
+            ticketId: decodedData[0],
+            amount: decodedData[1],
+            user: ethers.getAddress(ethers.dataSlice(depositLog.topics[1], 12)) // Extract indexed address
         }
+    };
+}
+
+// Proceed with your MongoDB update using decoded.args.ticketId
+
+ 
 
         // 3. Extract data from the decoded object
         // Since 'ticketId' is the first unindexed parameter, it's available here:
