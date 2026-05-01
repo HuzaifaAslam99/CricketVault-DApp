@@ -24,8 +24,12 @@ router.post("/webhook", async (req, res) => {
         //     "event Deposit(string ticketId, address indexed user, uint256 amount)"
         // ]);
 
+        // const iface = new ethers.Interface([
+        //     "event Deposit(string ticketId,address indexed user,uint256 amount)"
+        // ]);
+
         const iface = new ethers.Interface([
-            "event Deposit(string ticketId,address indexed user,uint256 amount)"
+            "event Deposit(string,address,uint256)"
         ]);
 
         const transactionHash = logs[0].transaction?.hash;
