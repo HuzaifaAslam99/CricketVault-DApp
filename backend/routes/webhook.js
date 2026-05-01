@@ -35,7 +35,8 @@ router.post("/webhook", async (req, res) => {
 
         const iface = new ethers.Interface(contractAbi);
 
-        console.log("Topic0:", ethers.id("Deposit(string,address,uint256)"));
+        // console.log("Topic0:", ethers.id(contractAbi));
+        console.log("Deposit Topic0:", iface.getEvent("Deposit").topicHash);
 
         const transactionHash = logs[0].transaction?.hash;
 
