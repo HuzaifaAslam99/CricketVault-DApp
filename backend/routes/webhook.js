@@ -2,6 +2,7 @@ const express = require("express");
 const Customer = require('../models/customers');
 const router = express.Router();
 const ethers = require("ethers");
+const contractAbi = require('../abi.json');
 
 // CRITICAL: The string must exactly match the Solidity signature to produce the correct hash.
 // No spaces between types in the signature hash calculation.
@@ -28,9 +29,11 @@ router.post("/webhook", async (req, res) => {
         //     "event Deposit(string ticketId,address indexed user,uint256 amount)"
         // ]);
 
-        const iface = new ethers.Interface([
-            "event Deposit(string,address,uint256)"
-        ]);
+        // const iface = new ethers.Interface([
+        //     "event Deposit(string,address,uint256)"
+        // ]);
+
+        const iface = new ethers.Interface(contractAbi);
 
         console.log("Topic0:", ethers.id("Deposit(string,address,uint256)"));
 
