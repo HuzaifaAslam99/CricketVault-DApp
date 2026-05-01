@@ -4,116 +4,96 @@ const router = express.Router();
 const ethers = require("ethers");
 const contractAbi = require('../abi.json');
 
+// Pre-compute the Deposit event topic so we can filter precisely
+const iface = new ethers.Interface(contractAbi);
+const DEPOSIT_TOPIC = iface.getEvent("Deposit").topicHash;
+console.log("Expected Deposit topic0:", DEPOSIT_TOPIC);
+
 router.post("/webhook", async (req, res) => {
-    try {
-        // 1. Path Resilience: Check common Alchemy payload structures
-        const logs = req.body.event?.data?.block?.logs || req.body.event?.data?.logs || [];
+  try {
+    // Always 200 to Alchemy — never let it retry and double-update
+    const logs = req.body.event?.data?.block?.logs;
 
-        if (!logs || logs.length === 0) {
-            console.log("No logs found. Payload might be a test ping.");
-            return res.status(200).json({ status: "ignored", message: "No logs array found" });
-        }
-
-        const iface = new ethers.Interface(contractAbi);
-
-        // 2. Constants for filtering (Normalizing to lowercase for comparison)
-        const ACTUAL_DEPOSIT_HASH = "0xd327b35e36b3981157588978d60961ff5c09dc2926008abb1dd77b1197a416ed".toLowerCase();
-        const VAULT_ADDRESS = "0x7Ce5D05474fabA0Cf8910Bd25B2eDe407F11Fc4c".toLowerCase();
-
-        // 3. Find the specific log with Diagnostic Tracking
-        let diagnosticData = [];
-        const depositLog = logs.find((log, index) => {
-            const logAddr = log?.address?.toLowerCase();
-            const logTopic = log?.topics?.[0]?.toLowerCase();
-            
-            const isMatch = (logAddr === VAULT_ADDRESS && logTopic === ACTUAL_DEPOSIT_HASH);
-            
-            // Store results of every log checked to debug mismatches
-            diagnosticData.push({
-                index,
-                match: isMatch,
-                receivedAddr: logAddr,
-                receivedTopic: logTopic
-            });
-
-            return isMatch;
-        });
-
-        // 4. Handle Case: Log not found
-        if (!depositLog) {
-            console.error("Authentic Deposit log not found.");
-            return res.status(200).json({ 
-                status: "error", 
-                message: "Authentic Deposit log not found",
-                diagnostics: diagnosticData // This will show you exactly what was received in Postman/Logs
-            });
-        }
-
-        const transactionHash = depositLog.transaction?.hash || "unknown_hash";
-        let decoded = null;
-
-        try {
-            // 5. Attempt Standard Decode
-            decoded = iface.parseLog({
-                topics: depositLog.topics,
-                data: depositLog.data
-            });
-        } catch (parseError) {
-            console.log("Standard parse failed (Topic0 mismatch). Using Manual Fallback.");
-            
-            // 6. Manual Fallback Decode (Bypasses ABI Signature Check)
-            const abiCoder = new ethers.AbiCoder();
-            // Data = [string ticketId, uint256 amount]
-            const decodedData = abiCoder.decode(["string", "uint256"], depositLog.data);
-            
-            decoded = {
-                args: {
-                    ticketId: decodedData[0],
-                    amount: decodedData[1],
-                    // Extract indexed user address from topics[1]
-                    user: ethers.getAddress(ethers.dataSlice(depositLog.topics[1], 12))
-                }
-            };
-        }
-
-        const ticketId = decoded.args.ticketId; 
-        console.log(`Processing payment for Ticket ID: ${ticketId}`);
-
-        // 7. Update MongoDB
-        const updatedBooking = await Customer.findOneAndUpdate(
-            { ticket_id: ticketId }, 
-            { 
-                status: "paid", 
-                transactionHash: transactionHash,
-            },
-            { returnDocument: 'after' }
-        );
-
-        if (!updatedBooking) {
-            console.log("Ticket ID not found in database:", ticketId);
-            return res.status(200).json({ 
-                status: "error", 
-                message: "Ticket ID not found in database", 
-                ticketId 
-            });
-        }
-
-        console.log("Verified Booking Updated to Paid:", ticketId);
-        return res.status(200).json({ 
-            status: "success", 
-            message: "Booking updated", 
-            ticketId 
-        });
-
-    } catch (error) {
-        console.error("Webhook Logic Error:", error.message);
-        return res.status(200).json({ status: "internal_error", error: error.message });
+    if (!logs || logs.length === 0) {
+      return res.status(200).json({ status: "ignored" });
     }
+
+    for (const rawLog of logs) {
+
+      // ✅ Normalize topics — handle both Shape A and Shape B
+      let topics;
+      if (Array.isArray(rawLog.topics)) {
+        topics = rawLog.topics;                          // Shape A
+      } else {
+        topics = [                                       // Shape B
+          rawLog.topic0,
+          rawLog.topic1,
+          rawLog.topic2,
+          rawLog.topic3,
+        ].filter(Boolean);
+      }
+
+      // ✅ Quick filter — skip logs that aren't our Deposit event
+      if (!topics[0] || topics[0].toLowerCase() !== DEPOSIT_TOPIC.toLowerCase()) {
+        console.log("Skipping unrelated log, topic0:", topics[0]);
+        continue;
+      }
+
+      const data = rawLog.data;
+      const transactionHash = rawLog.transaction?.hash;
+
+      console.log("Attempting to parse log:");
+      console.log("  topics:", topics);
+      console.log("  data:", data);
+
+      // ✅ Build exactly what ethers expects
+      let decoded;
+      try {
+        decoded = iface.parseLog({ topics, data });
+      } catch (err) {
+        console.error("parseLog failed even after normalization:", err.message);
+        // Data might be missing or malformed — skip this log
+        continue;
+      }
+
+      if (!decoded || decoded.name !== "Deposit") continue;
+
+      // ✅ Access by index — always safe regardless of ABI naming
+      const ticketId      = decoded.args[0];          // string  (non-indexed)
+      const buyerAddress  = decoded.args[1];          // address (indexed)
+      const amountWei     = decoded.args[2];          // uint256 (non-indexed)
+
+      console.log("✅ Decoded Deposit:", {
+        ticketId,
+        buyerAddress,
+        amountEth: ethers.formatEther(amountWei),
+        transactionHash,
+      });
+
+      // ✅ Update DB
+      const updatedBooking = await Customer.findOneAndUpdate(
+        { ticket_id: ticketId },
+        {
+          status: "paid",
+          transactionHash: transactionHash,
+          buyer_address: buyerAddress,
+        },
+        { new: true }
+      );
+
+      if (!updatedBooking) {
+        console.error("❌ ticket_id not found in DB:", ticketId);
+      } else {
+        console.log("✅ Booking marked paid:", ticketId);
+      }
+    }
+
+    return res.status(200).json({ status: "success" });
+
+  } catch (error) {
+    console.error("Webhook error:", error.message);
+    return res.status(200).json({ error: error.message });
+  }
 });
 
 module.exports = router;
-
-
-        // const iface = new ethers.Interface([
-        //     "event Deposit(string ticketId, address indexed user, uint256 amount)"
-        // ]);
