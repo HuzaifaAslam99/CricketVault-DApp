@@ -35,11 +35,27 @@ router.post("/webhook", async (req, res) => {
     //     return
     // }
 
+    // if (!decoded) {
+    //     return res.status(200).json({ 
+    //         status: "error", 
+    //         message: "Decoded as null",
+    //         receivedLogs: logs // This allows you to see the raw data in Postman
+    //     });
+    // }
+
+
     if (!decoded) {
+        const eventSig = "Deposit(string,address,uint256)";
+        const calcHash = ethers.id(eventSig);
+        
         return res.status(200).json({ 
             status: "error", 
             message: "Decoded as null",
-            receivedLogs: logs // This allows you to see the raw data in Postman
+            debug: {
+                expectedTopic0: calcHash,
+                receivedTopic0: logs[0].topics[0],
+                match: calcHash === logs[0].topics[0]
+            }
         });
     }
 
