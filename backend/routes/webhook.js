@@ -80,7 +80,7 @@ router.post("/webhook", verifyAlchemy, async (req, res) => {
           transactionHash: transactionHash,
           buyer_address: buyerAddress,
         },
-        { new: true }
+        { returnDocument: 'after' }
       );
 
       if (!updatedBooking) {
