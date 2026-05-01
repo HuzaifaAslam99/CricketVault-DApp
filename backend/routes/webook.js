@@ -4,63 +4,56 @@ const router = express.Router();
 const ethers = require("ethers");
 const contractAbi = require('../abi.json');
 
-
-// const iface = new ethers.Interface([
-//   "event Deposit(string ticketId, address indexed user, uint256 amount)",
-//   "event TicketMinted(uint256 indexed tokenId, string ticketId, string ipfsHash)"
-// ]);
-
 const iface = new ethers.Interface(contractAbi);
-
 const DEPOSIT_TOPIC = iface.getEvent("Deposit").topicHash;
-console.log("Expected Deposit topic0:", DEPOSIT_TOPIC);
-
 
 router.post("/webhook", async (req, res) => {
   try {
     const logs = req.body.event?.data?.block?.logs;
 
     if (!logs || logs.length === 0) {
-      console.log("No logs found.");
       return res.status(200).json({ status: "ignored" });
     }
 
-    // ✅ Find the Deposit log specifically (ignore TicketMinted)
-    const depositLog = logs.find(log => log.topics[0] === DEPOSIT_TOPIC);
+    // ✅ FIND AND NORMALIZE THE LOG
+    const depositLog = logs.find(rawLog => {
+      // Handle both Alchemy data shapes
+      const topics = Array.isArray(rawLog.topics) 
+        ? rawLog.topics 
+        : [rawLog.topic0, rawLog.topic1, rawLog.topic2, rawLog.topic3].filter(Boolean);
+      
+      return topics[0]?.toLowerCase() === DEPOSIT_TOPIC.toLowerCase();
+    });
 
     if (!depositLog) {
-      console.log("No Deposit event in this block.");
-      return res.status(200).json({ status: "ignored" });
+      return res.status(200).json({ status: "ignored", message: "No Deposit event found" });
     }
 
-    const transactionHash = depositLog.transaction?.hash;
+    // ✅ RE-NORMALIZE TOPICS FOR ETHERS PARSING
+    const finalTopics = Array.isArray(depositLog.topics) 
+      ? depositLog.topics 
+      : [depositLog.topic0, depositLog.topic1, depositLog.topic2, depositLog.topic3].filter(Boolean);
 
     let decoded;
     try {
-      decoded = iface.parseLog(depositLog);
+      decoded = iface.parseLog({ topics: finalTopics, data: depositLog.data });
     } catch (parseError) {
-      console.log("DECODE FAILED:", parseError.message);
+      console.error("Decode failed:", parseError.message);
       return res.status(200).json({ status: "error", message: "ABI Mismatch" });
     }
 
-    if (!decoded) {
-      return res.status(200).json({ status: "error", message: "Decoded as null" });
-    }
-
-    const ticketId     = decoded.args.ticketId;
-    const buyerAddress = decoded.args.user;
-    const amountWei    = decoded.args.amount;
-
-    console.log("✅ Decoded Deposit:", {
-      ticketId,
-      buyerAddress,
-      amountEth: ethers.formatEther(amountWei),
-      transactionHash,
-    });
+    // ✅ USE INDICES FOR ARGS TO PREVENT NAMING ERRORS
+    const ticketId      = decoded.args[0]; 
+    const buyerAddress  = decoded.args[1]; 
+    const amountWei     = decoded.args[2]; 
 
     const updatedBooking = await Customer.findOneAndUpdate(
       { ticket_id: ticketId },
-      { status: "paid", transactionHash, buyer_address: buyerAddress },
+      { 
+        status: "paid", 
+        transactionHash: depositLog.transaction?.hash, 
+        buyer_address: buyerAddress 
+      },
       { new: true }
     );
 
@@ -69,12 +62,12 @@ router.post("/webhook", async (req, res) => {
       return res.status(200).json({ message: "Ticket not in DB", id: ticketId });
     }
 
-    console.log("✅ Booking marked paid:", ticketId);
-    res.status(200).json({ status: "success", ticketId });
+    return res.status(200).json({ status: "success", ticketId });
 
   } catch (error) {
     console.error("Webhook error:", error.message);
-    res.status(200).json({ error: error.message });
+    // Return 200 so Alchemy stops retrying a broken payload
+    return res.status(200).json({ error: error.message });
   }
 });
 
