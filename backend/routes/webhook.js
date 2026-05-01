@@ -44,7 +44,7 @@ router.post("/webhook", async (req, res) => {
             return res.status(200).json({ 
                 status: "error", 
                 message: "Decoded as null",
-                receivedLogs: logs // This sends the actual data object
+                receivedIface: iface  // This sends the actual data object
             });
         }
 
