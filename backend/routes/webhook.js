@@ -20,9 +20,14 @@ router.post("/webhook", async (req, res) => {
             return res.status(200).json({ status: "ignored" });
         }
 
+        // const iface = new ethers.Interface([
+        //     "event Deposit(string ticketId, address indexed user, uint256 amount)"
+        // ]);
+
         const iface = new ethers.Interface([
-            "event Deposit(string ticketId, address indexed user, uint256 amount)"
+            "event Deposit(string ticketId,address indexed user,uint256 amount)"
         ]);
+
         const transactionHash = logs[0].transaction?.hash;
 
         let decoded = null;
