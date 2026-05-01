@@ -32,6 +32,8 @@ router.post("/webhook", async (req, res) => {
             "event Deposit(string,address,uint256)"
         ]);
 
+        console.log("Topic0:", ethers.id("Deposit(string,address,uint256)"));
+
         const transactionHash = logs[0].transaction?.hash;
 
         let decoded = null;
