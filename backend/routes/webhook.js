@@ -25,32 +25,19 @@ router.post("/webhook", async (req, res) => {
         ]);
         const transactionHash = logs[0].transaction?.hash;
 
-        const expectedTopic0 = iface.getEvent("Deposit").topicHash.toLowerCase();
-        const receivedTopic0 = logs[0].topics[0].toLowerCase();
-        
-        // 2. Normalize and Decode
         let decoded = null;
+
         try {
-            // We lowercase topics to ensure the 'match: false' error from your 
-            // screenshot (image_4c8a17.png) is bypassed.
-            decoded = iface.parseLog({
-                topics: logs[0].topics.map(t => t.toLowerCase()),
-                data: logs[0].data
-            });
+            decoded = iface.parseLog(logs[0]);
         } catch (parseError) {
-            console.error("DECODE FAILED:", parseError.reason);
-            return res.status(200).json({ 
-                status: "error", 
-                message: "ABI Mismatch or Malformed Data",
-                debug: {
-                    expectedTopic0: iface.getEvent("Deposit").topicHash,
-                    receivedTopic0: logs[0].topics[0]
-                }
-            });
+            console.log("DECODE FAILED. The ABI does not match the transaction log.");
+            console.log("Log Topics:", logs[0].topics);
+            console.log("Log Data:", logs[0].data);
+            return res.status(200).json({ status: "error", message: "ABI Mismatch" });
         }
 
         if (!decoded) {
-            return res.status(200).json({ status: "error", message: "Decoded as null" });
+            return res.status(200).json({ status: "error", message: `Decoded: ${decoded}` });
         }
 
         // 3. Extract data from the decoded object
