@@ -13,6 +13,8 @@ const contractAbi = require('../abi.json');
 const iface = new ethers.Interface(contractAbi);
 
 const DEPOSIT_TOPIC = iface.getEvent("Deposit").topicHash;
+console.log("Expected Deposit topic0:", DEPOSIT_TOPIC);
+
 
 router.post("/webhook", async (req, res) => {
   try {
