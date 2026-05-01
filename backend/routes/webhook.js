@@ -52,9 +52,12 @@ router.post("/webhook", async (req, res) => {
             status: "error", 
             message: "Decoded as null",
             debug: {
-                expectedTopic0: calcHash,
-                receivedTopic0: logs[0].topics[0],
-                match: calcHash === logs[0].topics[0]
+                expectedLen: calcHash.length,
+                receivedLen: logs[0].topics[0].length,
+                // This will show if there are hidden characters
+                expectedRaw: JSON.stringify(calcHash), 
+                receivedRaw: JSON.stringify(logs[0].topics[0]),
+                match: calcHash.trim() === logs[0].topics[0].trim()
             }
         });
     }
