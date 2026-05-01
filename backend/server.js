@@ -30,33 +30,16 @@ app.use(express.json());
 let isConnected = false;
 
 const connectDB = async () => {
-    if (isConnected) return;
-
-    try {
-        // DOUBLE CHECK THE CASING: Must match exactly what is in Vercel Settings
-        const db = await mongoose.connect(process.env.Ticket_Booking_DB_URI, {
-            serverSelectionTimeoutMS: 5000,
-        });
-        isConnected = db.connections[0].readyState;
-        console.log('MongoDB Connected');
-    } catch (err) {
-        console.error('DB Connection Error:', err.message);
-        // Important: throw the error so the function fails instead of hanging
-        throw err;
-    }
+  if (isConnected) return;
+  await mongoose.connect(process.env.Ticket_Booking_DB_URI);
+  isConnected = true;
+  console.log('MongoDB Connected');
 };
 
-// 2. MIDDLEWARE TO ENSURE DB IS READY
-// This prevents the "500" crash when routes try to use a closed connection
 app.use(async (req, res, next) => {
-    try {
-        await connectDB();
-        next();
-    } catch (err) {
-        res.status(500).json({ error: "Database connection failed" });
-    }
+  await connectDB();
+  next();
 });
-
 
 
 // mongoose.connect(process.env.Ticket_Booking_DB_URI)
