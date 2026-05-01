@@ -21,8 +21,20 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// app.use(express.json());
 
-app.use(express.json());
+
+
+app.use(express.json({
+  verify: (req, res, buf) => {
+    // Only capture for the webhook to save memory on other routes
+    if (req.originalUrl === '/api/webhook') {
+      req.rawBody = buf; // Keep it as a BINARY Buffer
+    }
+  }
+}));
+
+
 
 // console.log("My DB URL is: ", process.env.TICKET_BOOKING_DB_URI);
 

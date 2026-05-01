@@ -3,13 +3,14 @@ const Customer = require('../models/customers');
 const router = express.Router();
 const ethers = require("ethers");
 const contractAbi = require('../abi.json');
+const verifyAlchemy = require("../middleware/verifyAlchemy");
 
 // Pre-compute the Deposit event topic so we can filter precisely
 const iface = new ethers.Interface(contractAbi);
 const DEPOSIT_TOPIC = iface.getEvent("Deposit").topicHash;
 console.log("Expected Deposit topic0:", DEPOSIT_TOPIC);
 
-router.post("/webhook", async (req, res) => {
+router.post("/webhook", verifyAlchemy, async (req, res) => {
   try {
     // Always 200 to Alchemy — never let it retry and double-update
     const logs = req.body.event?.data?.block?.logs;
