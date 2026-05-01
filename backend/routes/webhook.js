@@ -41,10 +41,17 @@ router.post("/webhook", async (req, res) => {
         // }
 
         if (!decoded) {
+            const expected = iface.getEvent("Deposit").topicHash;
+            const received = logs[0].topics[0];
+    
             return res.status(200).json({ 
                 status: "error", 
                 message: "Decoded as null",
-                receivedIface: iface  // This sends the actual data object
+                comparison: {
+                    expected: expected,
+                    received: received,
+                    match: expected.toLowerCase() === received.toLowerCase()
+                }
             });
         }
 
