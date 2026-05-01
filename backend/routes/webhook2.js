@@ -21,6 +21,7 @@ router.post("/webhook", async (req, res) => {
     for (const rawLog of logs) {
 
       // ✅ Normalize topics — handle both Shape A and Shape B
+      
       let topics;
       if (Array.isArray(rawLog.topics)) {
         topics = rawLog.topics;                          // Shape A
