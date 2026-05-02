@@ -48,7 +48,11 @@ const CustomerTicket = () => {
         `${URL}/api/customersBooking/wallet/${address}`,
       );
       setTickets(response.data);
-      console.log(response.data);
+      console.log("Tickets: ",response.data);
+      console.log("Booking: ",tickets[0].bookings);
+      console.log("Team1: ",tickets[0].bookings.match_data.team1);
+
+
     } catch (err) {
       console.error("Wallet connect / fetch error:", err);
       setError("Failed to connect wallet or fetch tickets. Please try again.");
