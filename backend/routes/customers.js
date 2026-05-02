@@ -77,10 +77,7 @@ router.get("/customersBooking/wallet/:wallet_address", async (req, res) => {
         const { wallet_address } = req.params;
 
         // const findCustomer = await Customer.find({wallet_address: wallet_address}).populate({bookings[]});
-        const findCustomer = await Customer.find({ wallet_address: wallet_address }) .populate({
-            path: 'bookings.match', 
-            model: Tickets
-        });
+        const findCustomer = await Customer.find({ wallet_address: wallet_address }).populate('match_details');
         res.status(200).json(findCustomer);
 
     } catch (err) {

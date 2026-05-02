@@ -26,15 +26,27 @@ const CustomerSchema = new mongoose.Schema({
 
     bookings: [{
         match: { 
-            type: Number, 
-            ref: 'Tickets', 
+            type: Number,  
             required: true 
         },
         ticket_category: { type: String, required: true },
         quantity: { type: Number, required: true },
     }],
 
-});
+},
+
+{
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+}
+);
+
+    CustomerSchema.virtual('match_details', {
+        ref: 'Tickets',            // The model you are joining with
+        localField: 'bookings.match', // The field in THIS schema (the number 6)
+        foreignField: 'match',      // The field in the Tickets schema (also number 6)
+        justOne: true              // Each booking links to one match
+    });
 
 
 module.exports = mongoose.model('Customers', CustomerSchema);
