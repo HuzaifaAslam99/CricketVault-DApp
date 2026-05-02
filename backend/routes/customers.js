@@ -70,4 +70,18 @@ router.get("/bookingVerify/:ticketId", async (req, res) => {
 
 
 
+router.get("/customersBooking/wallet/:wallet_address", async (req, res) => {
+    try {
+        const { wallet_address } = req.params;
+
+        const findCustomer = await Customer.findOne({wallet_address: wallet_address});
+        res.status(200).json(findCustomer);
+
+    } catch (err) {
+        console.error("Booking Access Error:", err);
+        res.status(500).json({ message: "Internal Server Error", error: err.message });
+    }
+});
+
+
 module.exports = router

@@ -13,7 +13,6 @@ const CustomerSchema = new mongoose.Schema({
     
     ticket_id: {type: String},
     
-    ticket_category : {type: String},
     total_amount : {type: Number},
     total_tickets: {type: Number},
 
@@ -22,8 +21,14 @@ const CustomerSchema = new mongoose.Schema({
     ipfs_hash: {type: String},
 
     BookingTime: {  type: Date, default: Date.now },
-
     status: { type: String,  default: "pending" },
+    match_id: {type: Number},
+
+    bookings: [{
+        match_id: { type: Number, required: true },
+        ticket_category: { type: String, required: true },
+        quantity: { type: Number, required: true },
+    }],
 
 });
 

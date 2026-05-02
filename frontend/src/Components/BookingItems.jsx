@@ -121,7 +121,6 @@ const BookingItems = () => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-0 sm:p-4 font-['Barlow_Condensed',sans-serif]">
-            <style>{`@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500&display=swap');`}</style>
 
             <div className="bg-[#111118] border border-white/10 rounded-t-2xl sm:rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl max-h-[95vh] sm:max-h-[90vh] flex flex-col">
 
