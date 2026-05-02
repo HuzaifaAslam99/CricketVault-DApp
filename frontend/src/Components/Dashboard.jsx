@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { ticketCart } from "../TicketContext";
 import icc from "../assets/img/icc.png";
 import BookingCart from "./BookingCart";
+
 
 const Dashboard = () => {
     const { URL, bookingCart, setShowCart, confirmedBookings } = ticketCart();
     const [TicketArray, setTicketArray] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchTickets = async () => {
@@ -48,20 +50,15 @@ const Dashboard = () => {
                                 Tickets Live
                             </div>
 
-                            {/* My Tickets Link */}
+                            {/* My Tickets Button */}
                             <Link
                                 to="/my-tickets"
-                                className="relative flex items-center gap-2 border border-white/10 hover:border-white/20 bg-white/3 hover:bg-white/6 text-white/70 hover:text-white font-700 text-xs uppercase tracking-widest px-4 py-2.5 rounded-sm transition-all duration-200 active:scale-95"
+                                className="relative flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white font-800 text-sm uppercase tracking-widest px-5 py-2.5 rounded-sm transition-all duration-200 active:scale-95"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
                                 </svg>
                                 <span>My Tickets</span>
-                                {confirmedBookings.length > 0 && (
-                                    <span className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] font-900 w-5 h-5 rounded-full flex items-center justify-center">
-                                        {confirmedBookings.length}
-                                    </span>
-                                )}
                             </Link>
 
                             {/* Cart Button */}
@@ -105,7 +102,12 @@ const Dashboard = () => {
                 </div>
 
                 {/* ── MATCH GRID ── */}
+
+
+                
+
                 <main className="max-w-7xl mx-auto px-6 py-12">
+                    
                     {loading ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {[...Array(6)].map((_, i) => (

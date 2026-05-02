@@ -1,159 +1,283 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { ethers } from "ethers";
 import { ticketCart } from "../TicketContext";
 import icc from "../assets/img/icc.png";
-
+ 
 const CustomerTicket = () => {
     const { URL } = ticketCart();
-    const { bookingId } = useParams(); // or ipfsHash
     const navigate = useNavigate();
-    const [booking, setBooking] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchBooking = async () => {
-            try {
-                // Adjust this endpoint based on your backend logic
-                const response = await axios.get(`${URL}/api/bookings/${bookingId}`);
-                setBooking(response.data);
-            } catch (error) {
-                console.error("Error fetching booking", error);
-            } finally {
-                setLoading(false);
+ 
+    const [walletAddress, setWalletAddress] = useState(null);
+    const [tickets, setTickets] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [connecting, setConnecting] = useState(false);
+    const [error, setError] = useState(null);
+ 
+    const connectWallet = async () => {
+        setError(null);
+        setConnecting(true);
+        try {
+            if (!window.ethereum) {
+                setError("MetaMask not found. Please install it to view your tickets.");
+                setConnecting(false);
+                return;
             }
-        };
-        fetchBooking();
-    }, [bookingId, URL]);
-
-    if (loading) return (
-        <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
-            <div className="w-12 h-12 border-2 border-[#d4af37] border-t-transparent rounded-full animate-spin"></div>
-        </div>
-    );
-
-    if (!booking) return (
-        <div className="min-h-screen bg-[#0a0a0f] flex flex-col items-center justify-center text-white">
-            <p className="text-white/40 uppercase tracking-widest mb-4">Ticket Not Found</p>
-            <button onClick={() => navigate('/')} className="text-[#d4af37] border border-[#d4af37] px-6 py-2 rounded-sm hover:bg-[#d4af37] hover:text-black transition-all">Go Home</button>
-        </div>
-    );
-
+ 
+            // Switch to correct network
+            const targetChainId = "0x14a34";
+            const currentChainId = await window.ethereum.request({ method: "eth_chainId" });
+            if (currentChainId !== targetChainId) {
+                await window.ethereum.request({
+                    method: "wallet_switchEthereumChain",
+                    params: [{ chainId: targetChainId }],
+                });
+            }
+ 
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            const address = signer.address;
+            setWalletAddress(address);
+ 
+            // Fetch tickets for this wallet
+            setLoading(true);
+            const response = await axios.get(`${URL}/api/customersBooking/wallet/${address}`);
+            setTickets(response.data);
+        } catch (err) {
+            console.error("Wallet connect / fetch error:", err);
+            setError("Failed to connect wallet or fetch tickets. Please try again.");
+        } finally {
+            setConnecting(false);
+            setLoading(false);
+        }
+    };
+ 
+    const shortAddress = (addr) =>
+        addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : "";
+ 
     return (
-        <div className="min-h-screen bg-[#0a0a0f] font-['Barlow_Condensed',sans-serif] pb-12">
+        <div className="min-h-screen bg-[#0a0a0f] font-['Barlow_Condensed',sans-serif]">
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600&display=swap');
-                .ticket-cutout { clip-path: polygon(0% 0%, 100% 0%, 100% 70%, 95% 75%, 100% 80%, 100% 100%, 0% 100%, 0% 80%, 5% 75%, 0% 70%); }
+                @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500&display=swap');
+                @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+                .fade-up { animation: fadeUp 0.4s ease both; }
             `}</style>
-
-            {/* Header */}
-            <header className="p-6 flex justify-between items-center max-w-4xl mx-auto">
-                <div className="flex items-center gap-3">
-                    <img src={icc} className="h-8 w-8" alt="ICC" />
-                    <span className="text-white font-900 tracking-widest uppercase text-sm">Cricket Vault</span>
-                </div>
-                <button onClick={() => window.print()} className="bg-white/5 hover:bg-white/10 text-white/60 text-[10px] font-700 uppercase tracking-[0.2em] px-4 py-2 border border-white/10 rounded-sm transition-all">
-                    Download PDF
-                </button>
-            </header>
-
-            <main className="max-w-md mx-auto px-6 mt-8">
-                {/* Status Badge */}
-                <div className="text-center mb-8">
-                    <div className="inline-block px-4 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-500 text-[10px] font-800 uppercase tracking-[0.3em] mb-2">
-                        Confirmed & Verified
-                    </div>
-                    <h2 className="text-white text-2xl font-900 uppercase tracking-tight">Your Digital Entry</h2>
-                </div>
-
-                {/* The Ticket Card */}
-                <div className="relative group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-b from-[#d4af37]/20 to-transparent rounded-2xl blur opacity-30"></div>
-                    
-                    <div className="relative bg-[#111118] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-                        {/* Top Section */}
-                        <div className="bg-[#d4af37] px-6 py-4 flex justify-between items-center">
-                            <span className="text-black font-900 text-lg uppercase tracking-tighter">Match Ticket</span>
-                            <span className="text-black/60 font-800 text-xs uppercase tracking-widest">#{booking.bookingId?.slice(-6) || 'N/A'}</span>
-                        </div>
-
-                        <div className="p-8">
-                            {/* Match Info */}
-                            <div className="flex justify-between items-center mb-8">
-                                <div className="text-center">
-                                    <img src={booking.img_team1} className="w-16 h-16 object-contain mb-2" alt={booking.team1} />
-                                    <div className="text-white font-800 text-sm uppercase">{booking.team1}</div>
-                                </div>
-                                <div className="text-[#d4af37] font-900 text-xl italic">VS</div>
-                                <div className="text-center">
-                                    <img src={booking.img_team2} className="w-16 h-16 object-contain mb-2" alt={booking.team2} />
-                                    <div className="text-white font-800 text-sm uppercase">{booking.team2}</div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4 border-t border-white/5 pt-6">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <p className="text-white/30 text-[10px] font-600 uppercase tracking-widest">Venue</p>
-                                        <p className="text-white font-700 text-sm">{booking.venue}</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-white/30 text-[10px] font-600 uppercase tracking-widest">Category</p>
-                                        <p className="text-[#d4af37] font-700 text-sm uppercase">{booking.category}</p>
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <p className="text-white/30 text-[10px] font-600 uppercase tracking-widest">Date</p>
-                                        <p className="text-white font-700 text-sm">{booking.date}</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-white/30 text-[10px] font-600 uppercase tracking-widest">Customer</p>
-                                        <p className="text-white font-700 text-sm">{booking.customerName}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* QR Code Placeholder */}
-                            <div className="mt-10 flex flex-col items-center">
-                                <div className="bg-white p-3 rounded-lg mb-4">
-                                    {/* Replace with actual QR component using booking.ipfsHash */}
-                                    <div className="w-32 h-32 bg-gray-200 flex items-center justify-center text-black text-[10px] text-center font-bold">
-                                        [QR CODE SCAN]
-                                    </div>
-                                </div>
-                                <p className="text-white/20 text-[9px] font-mono break-all text-center">
-                                    IPFS: {booking.ipfsHash}
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Footer Strip */}
-                        <div className="bg-white/5 p-4 text-center border-t border-white/5">
-                            <p className="text-white/40 text-[10px] font-600 tracking-[0.2em] uppercase">
-                                Scan at Gate for Entry
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Security Note */}
-                <div className="mt-8 p-4 rounded-lg border border-white/5 bg-white/[0.02]">
-                    <div className="flex gap-3">
-                        <svg className="w-5 h-5 text-[#d4af37] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+ 
+            {/* ── HEADER ── */}
+            <header className="sticky top-0 z-40 border-b border-white/5 bg-black/60 backdrop-blur-md">
+                <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+                    <Link
+                        to="/"
+                        className="flex items-center gap-2 text-white/40 hover:text-white transition-colors text-sm font-700 uppercase tracking-widest"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                         </svg>
+                        Back
+                    </Link>
+ 
+                    <div className="flex items-center gap-3">
+                        <img src={icc} className="h-8 w-8 object-contain" alt="ICC" />
+                        <span className="text-white font-800 text-sm uppercase tracking-widest hidden sm:block">Cricket Vault</span>
+                    </div>
+ 
+                    {walletAddress ? (
+                        <div className="flex items-center gap-2 border border-green-500/30 bg-green-500/10 text-green-400 text-xs font-700 uppercase tracking-widest px-3 py-2 rounded-sm">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span>
+                            {shortAddress(walletAddress)}
+                        </div>
+                    ) : (
+                        <div className="w-24" /> /* spacer */
+                    )}
+                </div>
+            </header>
+ 
+            {/* ── PAGE TITLE ── */}
+            <div className="border-b border-white/5 bg-gradient-to-r from-[#0d1117] via-[#111827] to-[#0d1117]">
+                <div className="max-w-5xl mx-auto px-6 py-10">
+                    <p className="text-[#d4af37] text-xs font-700 tracking-[0.4em] uppercase mb-2">ICC Champions Trophy 2025</p>
+                    <h1 className="text-white font-900 text-4xl md:text-5xl uppercase leading-none tracking-tight">
+                        My <span className="text-[#d4af37]">Tickets</span>
+                    </h1>
+                </div>
+            </div>
+ 
+            <main className="max-w-5xl mx-auto px-6 py-12">
+ 
+                {/* ── NOT CONNECTED ── */}
+                {!walletAddress && (
+                    <div className="fade-up flex flex-col items-center justify-center text-center py-24 gap-8">
+                        <div className="w-24 h-24 rounded-full bg-white/3 border border-white/8 flex items-center justify-center">
+                            <svg className="w-10 h-10 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+                            </svg>
+                        </div>
                         <div>
-                            <p className="text-white font-700 text-xs uppercase tracking-wider mb-1">Blockchain Secured</p>
-                            <p className="text-white/40 text-[10px] leading-relaxed" style={{fontFamily: "'Barlow', sans-serif"}}>
-                                This ticket is cryptographically signed and stored on IPFS. Any alteration will invalidate the digital signature.
+                            <p className="text-white font-900 text-xl uppercase tracking-widest mb-2">Connect Your Wallet</p>
+                            <p className="text-white/30 text-sm max-w-xs mx-auto" style={{fontFamily:"'Barlow',sans-serif"}}>
+                                Connect your MetaMask wallet to view all tickets purchased with that address.
                             </p>
                         </div>
+ 
+                        {error && (
+                            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-700 uppercase tracking-widest px-5 py-3 rounded-lg max-w-sm">
+                                {error}
+                            </div>
+                        )}
+ 
+                        <button
+                            onClick={connectWallet}
+                            disabled={connecting}
+                            className="flex items-center gap-3 bg-[#d4af37] hover:bg-[#e8c547] disabled:opacity-50 text-black font-900 text-sm uppercase tracking-widest px-8 py-4 rounded-xl transition-all active:scale-95"
+                        >
+                            {connecting ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
+                                    Connecting...
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M11.944 17.97L4.58 13.62 11.943 24l7.37-10.38-7.372 4.35h.003zM12.056 0L4.69 12.223l7.365 4.354 7.365-4.35L12.056 0z"/>
+                                    </svg>
+                                    Connect MetaMask
+                                </>
+                            )}
+                        </button>
                     </div>
-                </div>
+                )}
+ 
+                {/* ── LOADING ── */}
+                {walletAddress && loading && (
+                    <div className="flex flex-col items-center justify-center py-24 gap-4">
+                        <div className="w-12 h-12 border-2 border-[#d4af37] border-t-transparent rounded-full animate-spin"></div>
+                        <p className="text-white/40 text-sm font-600 uppercase tracking-widest">Fetching your tickets...</p>
+                    </div>
+                )}
+ 
+                {/* ── EMPTY STATE (connected but no tickets) ── */}
+                {walletAddress && !loading && tickets.length === 0 && (
+                    <div className="fade-up flex flex-col items-center justify-center text-center py-24 gap-6">
+                        <div className="w-20 h-20 rounded-full bg-white/3 border border-white/8 flex items-center justify-center">
+                            <svg className="w-9 h-9 text-white/15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p className="text-white font-900 text-lg uppercase tracking-widest mb-1">No Tickets Found</p>
+                            <p className="text-white/30 text-xs" style={{fontFamily:"'Barlow',sans-serif"}}>
+                                No purchases found for <span className="text-white/50 font-mono">{shortAddress(walletAddress)}</span>
+                            </p>
+                        </div>
+                        <Link
+                            to="/"
+                            className="bg-[#d4af37] hover:bg-[#e8c547] text-black font-900 text-xs uppercase tracking-widest px-8 py-3 rounded-lg transition-all active:scale-95"
+                        >
+                            Browse Matches
+                        </Link>
+                    </div>
+                )}
+ 
+                {/* ── TICKET LIST ── */}
+                {walletAddress && !loading && tickets.length > 0 && (
+                    <>
+                        <div className="flex items-center gap-4 mb-8">
+                            <p className="text-white/40 text-xs font-600 uppercase tracking-widest" style={{fontFamily:"'Barlow',sans-serif"}}>
+                                {tickets.length} {tickets.length === 1 ? "Ticket" : "Tickets"} found for {shortAddress(walletAddress)}
+                            </p>
+                            <div className="h-px flex-1 bg-white/5"></div>
+                        </div>
+ 
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {tickets.map((booking, index) => (
+                                <div
+                                    key={booking._id || index}
+                                    className="fade-up relative bg-[#111118] border border-white/8 rounded-xl overflow-hidden hover:border-[#d4af37]/30 transition-all duration-300"
+                                    style={{ animationDelay: `${index * 0.07}s` }}
+                                >
+                                    {/* Gold top bar */}
+                                    <div className="h-1 w-full bg-gradient-to-r from-[#d4af37] to-[#f0d060]"></div>
+ 
+                                    {/* Header */}
+                                    <div className="bg-gradient-to-r from-[#0f3460] to-[#1a4a8a] px-5 py-3 flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <img src={icc} className="h-5 w-5 object-contain opacity-80" alt="ICC" />
+                                            <span className="text-white/60 text-[10px] font-700 tracking-[0.25em] uppercase">ICC Champions Trophy</span>
+                                        </div>
+                                        <span className="text-[10px] font-800 uppercase tracking-widest px-2 py-0.5 rounded-sm bg-green-500/20 text-green-400 border border-green-500/20">
+                                            Confirmed
+                                        </span>
+                                    </div>
+ 
+                                    <div className="p-5">
+                                        {/* Teams */}
+                                        <div className="flex items-center justify-center gap-4 mb-5">
+                                            <div className="flex flex-col items-center gap-1.5 flex-1">
+                                                <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden p-1">
+                                                    <img src={booking.img_team1} className="w-full h-full object-contain" alt={booking.team1} onError={e => e.target.style.display='none'} />
+                                                </div>
+                                                <span className="text-white font-800 text-xs uppercase tracking-wider text-center">{booking.team1}</span>
+                                            </div>
+                                            <div className="text-[#d4af37] font-900 text-base">VS</div>
+                                            <div className="flex flex-col items-center gap-1.5 flex-1">
+                                                <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden p-1">
+                                                    <img src={booking.img_team2} className="w-full h-full object-contain" alt={booking.team2} onError={e => e.target.style.display='none'} />
+                                                </div>
+                                                <span className="text-white font-800 text-xs uppercase tracking-wider text-center">{booking.team2}</span>
+                                            </div>
+                                        </div>
+ 
+                                        {/* Details grid */}
+                                        <div className="grid grid-cols-2 gap-3 border-t border-white/5 pt-4 mb-4">
+                                            <div>
+                                                <p className="text-white/30 text-[10px] font-700 uppercase tracking-widest mb-0.5">Category</p>
+                                                <p className="text-[#d4af37] font-800 text-sm uppercase">{booking.category}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-white/30 text-[10px] font-700 uppercase tracking-widest mb-0.5">Qty</p>
+                                                <p className="text-white font-800 text-sm">{booking.quantity} {booking.quantity === 1 ? "Ticket" : "Tickets"}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-white/30 text-[10px] font-700 uppercase tracking-widest mb-0.5">Venue</p>
+                                                <p className="text-white font-700 text-xs" style={{fontFamily:"'Barlow',sans-serif"}}>{booking.venue}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-white/30 text-[10px] font-700 uppercase tracking-widest mb-0.5">Date</p>
+                                                <p className="text-white font-700 text-xs" style={{fontFamily:"'Barlow',sans-serif"}}>{booking.date}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-white/30 text-[10px] font-700 uppercase tracking-widest mb-0.5">Customer</p>
+                                                <p className="text-white font-700 text-xs" style={{fontFamily:"'Barlow',sans-serif"}}>{booking.firstName} {booking.lastName}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-white/30 text-[10px] font-700 uppercase tracking-widest mb-0.5">Amount</p>
+                                                <p className="text-white font-800 text-sm">${booking.amount}</p>
+                                            </div>
+                                        </div>
+ 
+                                        {/* IPFS / Booking ID */}
+                                        <div className="bg-white/3 border border-white/5 rounded-lg px-3 py-2 flex items-center justify-between gap-2">
+                                            <div className="min-w-0">
+                                                <p className="text-white/30 text-[9px] font-700 uppercase tracking-widest mb-0.5">Booking ID</p>
+                                                <p className="text-white/50 text-[10px] font-mono truncate">{booking.ticket_id || booking._id}</p>
+                                            </div>
+                                            <button
+                                                onClick={() => window.print()}
+                                                className="shrink-0 border border-white/10 hover:border-[#d4af37]/40 text-white/30 hover:text-[#d4af37] text-[10px] font-700 uppercase tracking-widest px-3 py-1.5 rounded-sm transition-all"
+                                            >
+                                                Print
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                )}
             </main>
         </div>
     );
 };
-
+ 
 export default CustomerTicket;
