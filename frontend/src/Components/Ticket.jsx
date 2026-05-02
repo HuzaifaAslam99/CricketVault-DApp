@@ -178,7 +178,7 @@ const Ticket = () => {
                                 
                                 <button
                                     disabled={!isAvailable}
-                                    onClick={() => handleAdd(cat.label)}
+                                    onClick={() => handleAdd(cat)}
                                     className="w-full py-3 rounded-lg font-bold uppercase tracking-widest transition-all"
                                     style={{
                                         background: isAvailable ? `linear-gradient(135deg, ${cat.color}, ${cat.accent})` : '#333',
