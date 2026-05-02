@@ -65,14 +65,14 @@ router.post("/webhook", verifyAlchemy, async (req, res) => {
       const buyerAddress  = decoded.args[1];          // address (indexed)
       const amountWei     = decoded.args[2];          // uint256 (non-indexed)
 
-      console.log("✅ Decoded Deposit:", {
+      console.log("Decoded Deposit:", {
         ticketId,
         buyerAddress,
         amountEth: ethers.formatEther(amountWei),
         transactionHash,
       });
 
-      // ✅ Update DB
+
       const updatedBooking = await Customer.findOneAndUpdate(
         { ticket_id: ticketId },
         {
@@ -84,7 +84,7 @@ router.post("/webhook", verifyAlchemy, async (req, res) => {
       );
 
       if (!updatedBooking) {
-        console.error("❌ ticket_id not found in DB:", ticketId);
+        console.error("ticket_id not found in DB:", ticketId);
       } else {
         console.log("✅ Booking marked paid:", ticketId);
       }

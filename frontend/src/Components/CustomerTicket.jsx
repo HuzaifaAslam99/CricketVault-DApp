@@ -44,6 +44,8 @@ const CustomerTicket = () => {
             setLoading(true);
             const response = await axios.get(`${URL}/api/customersBooking/wallet/${address}`);
             setTickets(response.data);
+            console.log(response.data);
+            
         } catch (err) {
             console.error("Wallet connect / fetch error:", err);
             setError("Failed to connect wallet or fetch tickets. Please try again.");
