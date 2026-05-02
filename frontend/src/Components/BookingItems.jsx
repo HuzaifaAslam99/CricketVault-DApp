@@ -28,96 +28,91 @@ const BookingItems = () => {
         }
     };
 
-    const handleCheckout = async (e) => {
-        e.preventDefault();
-        setStep("processing");
+    
+const handleCheckout = async (e) => {
+    e.preventDefault();
+    setStep("processing");
 
-        const CONTRACT_ADDRESS = contract_address;
-        const ABI = ticket_abi;
+    if (!window.ethereum) {
+        setMessage("Please install MetaMask!");
+        setAlert(true);
+        setStep("form");
+        return;
+    }
 
-        if (!window.ethereum) {
-            setMessage("Please install MetaMask!");
-            setAlert(true);
-            setStep("form");
-            return;
+    try {
+        // 1. Ensure correct network
+        const targetChainId = "0x14a34";
+        const currentChainId = await window.ethereum.request({ method: "eth_chainId" });
+        if (currentChainId !== targetChainId) {
+            await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: targetChainId }] });
         }
 
-        try {
-            const targetChainId = "0x14a34";
-            const currentChainId = await window.ethereum.request({ method: "eth_chainId" });
-            if (currentChainId !== targetChainId) {
-                await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: targetChainId }] });
-            }
+        const browserProvider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await browserProvider.getSigner();
+        const contract = new ethers.Contract(contract_address, ticket_abi, signer);
 
-            const browserProvider = new ethers.BrowserProvider(window.ethereum);
-            const signer = await browserProvider.getSigner();
-            const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+        setProcessingMessage("Initiating secure booking...");
 
-            // Process each cart item
-            for (const item of bookingCart) {
-                const total_amount = item.ticket[item.category.priceKey] * item.quantity;
-                setProcessingMessage(`Booking ${item.category.label} tickets for ${item.ticket.team1} vs ${item.ticket.team2}...`);
+        // 2. Single API Call for the entire cart
+        const response = await axios.post(`${URL}/api/customersBooking/initiate`, {
+            firstName: customer.firstName,
+            lastName: customer.lastName,
+            email: customer.email,
+            phone: customer.phone,
+            city: customer.city,
+            address: customer.address,
+            wallet_address: signer.address,
+            amount: grandTotal, 
+            bookings: bookingCart.map(item => ({
+                match_id: item.ticket.match,
+                ticket_category: item.category.label,
+                quantity: item.quantity
+            }))
+        });
 
-                const response = await axios.post(`${URL}/api/customersBooking/initiate`, {
-                    firstName: customer.firstName,
-                    lastName: customer.lastName,
-                    email: customer.email,
-                    phone: customer.phone,
-                    city: customer.city,
-                    address: customer.address,
-                    quantity: item.quantity,
-                    category: item.category.label,
-                    amount: total_amount,
-                    wallet_address: signer.address,
-                });
+        const { ticket_id, ipfs_hash } = response.data;
 
-                const ticketId = response.data.ticket_id;
-                const ipfsHash = response.data.ipfs_hash;
+        // 3. Convert Grand Total USD to ETH
+        const currentPrice = await fetchEthPrice();
+        const ethValue = (grandTotal / currentPrice).toFixed(18);
+        const amountEthWei = ethers.parseEther(ethValue);
 
-                const currentPrice = await fetchEthPrice();
-                const ethValue = (total_amount / currentPrice).toFixed(18);
-                const amountEthWei = ethers.parseEther(ethValue);
+        // 4. Single Blockchain Transaction
+        setProcessingMessage(`Confirming total payment in MetaMask...`);
+        const tx = await contract.buyTicket(ticket_id, ipfs_hash, { 
+            value: amountEthWei,
+            gasLimit: 800000 
+        });
 
-                const balance = await browserProvider.getBalance(signer.address);
-                if (balance < amountEthWei) {
-                    setMessage("Insufficient ETH balance");
-                    setAlert(true);
-                    setStep("form");
-                    return;
+        setProcessingMessage("Finalizing on blockchain...");
+        const receipt = await tx.wait();
+
+        // 5. Verify & Cleanup
+        const verifyPayment = (id) => {
+            const interval = setInterval(async () => {
+                try {
+                    const res = await axios.get(`${URL}/api/bookingVerify/${id}`);
+                    if (res.data.status === "paid") clearInterval(interval);
+                } catch (err) {
+                    console.error("Polling error:", err);
                 }
+            }, 2000);
+        };
+        verifyPayment(ticket_id);
 
-                setProcessingMessage("Confirm transaction in MetaMask...");
-                const tx = await contract.buyTicket(ticketId, ipfsHash, { value: amountEthWei, gasLimit: 800000 });
-                setProcessingMessage("Waiting for confirmation...");
-                const receipt = await tx.wait();
-                console.log("Transaction confirmed:", receipt.hash);
+        clearCart();
+        setShowCart(false);
+        setMessage("All Tickets Successfully Booked!");
+        setAlert(true);
 
-                // Poll for payment verification
-                const verifyPayment = (id) => {
-                    const interval = setInterval(async () => {
-                        try {
-                            const res = await axios.get(`${URL}/api/bookingVerify/${id}`);
-                            if (res.data.status === "paid") clearInterval(interval);
-                        } catch (err) {
-                            console.error("Polling error:", err);
-                        }
-                    }, 1000);
-                };
-                verifyPayment(ticketId);
-            }
-
-            clearCart();
-            setShowCart(false);
-            setMessage("All Tickets Successfully Booked!");
-            setAlert(true);
-
-        } catch (error) {
-            console.error("Booking error:", error);
-            setShowCart(false);
-            setMessage("Booking Cancelled");
-            setAlert(true);
-        }
-    };
+    } catch (error) {
+        console.error("Booking error:", error);
+        setStep("form");
+        setMessage(error.message.includes("rejected") ? "Transaction Rejected" : "Booking Failed");
+        setAlert(true);
+    }
+};
 
     return (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-0 sm:p-4 font-['Barlow_Condensed',sans-serif]">

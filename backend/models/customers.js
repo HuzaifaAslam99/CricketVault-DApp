@@ -5,7 +5,7 @@ const CustomerSchema = new mongoose.Schema({
     customer_first_name: { type: String, required: true },
     customer_last_name: { type: String },
 
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true},
     phonenumber: {type:String, minLength:11, required: true},
 
     city: {type: String, required: true},
@@ -22,7 +22,7 @@ const CustomerSchema = new mongoose.Schema({
 
     BookingTime: {  type: Date, default: Date.now },
     status: { type: String,  default: "pending" },
-    match_id: {type: Number},
+    // match_id: {type: Number},
 
     bookings: [{
         match_id: { type: Number, required: true },
