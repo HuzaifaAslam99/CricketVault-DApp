@@ -65,6 +65,13 @@ const CustomerTicket = () => {
   const shortAddress = (addr) =>
     addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : "";
 
+    const ticketTypes = [
+        { label: "General",     priceKey: "general_price" },
+        { label: "Standard",    priceKey: "standard_price" },
+        { label: "First Class", priceKey: "firstClass_price" },
+        { label: "VIP",         priceKey: "VIP_price" },
+    ];
+
   return (
     <div className="min-h-screen bg-[#0a0a0f] font-['Barlow_Condensed',sans-serif]">
 
@@ -357,14 +364,25 @@ const CustomerTicket = () => {
                             {ticket.customer_last_name}
                           </p>
                         </div>
+                        
                         <div className="text-right">
-                          <p className="text-white/30 text-[10px] font-700 uppercase tracking-widest mb-0.5">
-                            Total Paid
-                          </p>
-                          <p className="text-white font-800 text-sm">
-                            ${ticket.total_amount}
-                          </p>
+                            <p className="text-white/30 text-[10px] font-700 uppercase tracking-widest mb-0.5">
+                                Total Paid
+                            </p>
+                            <p className="text-white font-800 text-sm">
+                                ${(() => {
+                                    // 1. Find the ticket type object that matches this booking's category
+                                    const typeInfo = ticketTypes.find(t => t.label === booking.ticket_category);
+      
+                                    // 2. Get the price using the priceKey (e.g., match_data['general_price'])
+                                    const unitPrice = typeInfo ? booking.match_data?.[typeInfo.priceKey] : 0;
+      
+                                    // 3. Multiply by quantity
+                                    return (unitPrice * booking.quantity); 
+                                })()}
+                            </p>
                         </div>
+
                       </div>
 
                       {/* Booking ID */}
