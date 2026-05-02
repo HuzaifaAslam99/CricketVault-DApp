@@ -26,8 +26,8 @@ const CustomerSchema = new mongoose.Schema({
 
     bookings: [{
         match_id: { 
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'tickets', 
+            type: Number, 
+            ref: 'Tickets', 
             required: true 
         },
         ticket_category: { type: String, required: true },
