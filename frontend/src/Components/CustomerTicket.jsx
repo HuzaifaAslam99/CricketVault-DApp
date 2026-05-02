@@ -192,9 +192,9 @@ const CustomerTicket = () => {
                         </div>
  
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {tickets.map((booking, index) => (
+                            {tickets.bookings.map((booking, index) => (
                                 <div
-                                    key={booking._id || index}
+                                    key={index}
                                     className="fade-up relative bg-[#111118] border border-white/8 rounded-xl overflow-hidden hover:border-[#d4af37]/30 transition-all duration-300"
                                     style={{ animationDelay: `${index * 0.07}s` }}
                                 >
@@ -217,16 +217,16 @@ const CustomerTicket = () => {
                                         <div className="flex items-center justify-center gap-4 mb-5">
                                             <div className="flex flex-col items-center gap-1.5 flex-1">
                                                 <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden p-1">
-                                                    <img src={booking.img_team1} className="w-full h-full object-contain" alt={booking.team1} onError={e => e.target.style.display='none'} />
+                                                    <img src={booking.match_id.img_team1} className="w-full h-full object-contain" alt={tickets.bookings.team1} onError={e => e.target.style.display='none'} />
                                                 </div>
-                                                <span className="text-white font-800 text-xs uppercase tracking-wider text-center">{booking.team1}</span>
+                                                <span className="text-white font-800 text-xs uppercase tracking-wider text-center">{booking.match_id.team1}</span>
                                             </div>
                                             <div className="text-[#d4af37] font-900 text-base">VS</div>
                                             <div className="flex flex-col items-center gap-1.5 flex-1">
                                                 <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden p-1">
-                                                    <img src={booking.img_team2} className="w-full h-full object-contain" alt={booking.team2} onError={e => e.target.style.display='none'} />
+                                                    <img src={booking.match_id.img_team2} className="w-full h-full object-contain" alt={booking.match_id.team2} onError={e => e.target.style.display='none'} />
                                                 </div>
-                                                <span className="text-white font-800 text-xs uppercase tracking-wider text-center">{booking.team2}</span>
+                                                <span className="text-white font-800 text-xs uppercase tracking-wider text-center">{booking.match_id.team2}</span>
                                             </div>
                                         </div>
  
@@ -242,27 +242,27 @@ const CustomerTicket = () => {
                                             </div>
                                             <div>
                                                 <p className="text-white/30 text-[10px] font-700 uppercase tracking-widest mb-0.5">Venue</p>
-                                                <p className="text-white font-700 text-xs" style={{fontFamily:"'Barlow',sans-serif"}}>{booking.venue}</p>
+                                                <p className="text-white font-700 text-xs" style={{fontFamily:"'Barlow',sans-serif"}}>{booking.match_id.venue}</p>
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-white/30 text-[10px] font-700 uppercase tracking-widest mb-0.5">Date</p>
-                                                <p className="text-white font-700 text-xs" style={{fontFamily:"'Barlow',sans-serif"}}>{booking.date}</p>
+                                                <p className="text-white font-700 text-xs" style={{fontFamily:"'Barlow',sans-serif"}}>{booking.match_id.date}</p>
                                             </div>
                                             <div>
                                                 <p className="text-white/30 text-[10px] font-700 uppercase tracking-widest mb-0.5">Customer</p>
-                                                <p className="text-white font-700 text-xs" style={{fontFamily:"'Barlow',sans-serif"}}>{booking.firstName} {booking.lastName}</p>
+                                                <p className="text-white font-700 text-xs" style={{fontFamily:"'Barlow',sans-serif"}}>{tickets.firstName} {tickets.lastName}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-white/30 text-[10px] font-700 uppercase tracking-widest mb-0.5">Amount</p>
-                                                <p className="text-white font-800 text-sm">${booking.amount}</p>
+                                                <p className="text-white/30 text-[10px] font-700 uppercase tracking-widest mb-0.5">A</p>
+                                                <p className="text-white font-800 text-sm">${tickets.total_amount}</p>
                                             </div>
                                         </div>
  
                                         {/* IPFS / Booking ID */}
                                         <div className="bg-white/3 border border-white/5 rounded-lg px-3 py-2 flex items-center justify-between gap-2">
-                                            <div className="min-w-0">
+                                            <div className="min-w-0">mount
                                                 <p className="text-white/30 text-[9px] font-700 uppercase tracking-widest mb-0.5">Booking ID</p>
-                                                <p className="text-white/50 text-[10px] font-mono truncate">{booking.ticket_id || booking._id}</p>
+                                                <p className="text-white/50 text-[10px] font-mono truncate">{tickets.ticket_id}</p>
                                             </div>
                                             <button
                                                 onClick={() => window.print()}
