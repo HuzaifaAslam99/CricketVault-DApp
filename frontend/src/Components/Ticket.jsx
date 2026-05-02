@@ -11,6 +11,7 @@ const Ticket = () => {
         bookingCart, 
         setShowCart, 
         showAlert, 
+        showMessage,
         setAlert, 
         ticket, 
         setTicket, 
