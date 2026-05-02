@@ -15,7 +15,7 @@ const EmptyCart = () => {
                     </div>
                     <button
                         onClick={() => setShowCart(false)}
-                        className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all text-lg leading-none"
+                        className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all text-lg leading-none cursor-pointer"
                     >
                         ✕
                     </button>
@@ -43,7 +43,7 @@ const EmptyCart = () => {
 
                     <button
                         onClick={() => setShowCart(false)}
-                        className="bg-[#d4af37] hover:bg-[#e8c547] text-black font-800 text-xs uppercase tracking-widest px-8 py-3 rounded-lg transition-all active:scale-95"
+                        className="bg-[#d4af37] hover:bg-[#e8c547] text-black font-800 text-xs uppercase tracking-widest px-8 py-3 rounded-lg transition-all active:scale-95 cursor-pointer"
                     >
                         Browse Matches
                     </button>

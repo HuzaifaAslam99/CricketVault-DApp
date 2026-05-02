@@ -219,7 +219,7 @@ const Ticket = () => {
                                     {isAvailable ? (
                                         <button
                                             onClick={() => { addToCart(ticket, cat); }}
-                                            className="w-full py-3 rounded-lg font-800 text-sm uppercase tracking-widest transition-all duration-200 active:scale-95"
+                                            className="w-full py-3 rounded-lg font-800 text-sm uppercase tracking-widest transition-all duration-200 active:scale-95 cursor-pointer"
                                             style={{
                                                 background: inCart ? `${cat.color}22` : `linear-gradient(135deg, ${cat.color}, ${cat.accent})`,
                                                 color: inCart ? cat.accent : '#000',
