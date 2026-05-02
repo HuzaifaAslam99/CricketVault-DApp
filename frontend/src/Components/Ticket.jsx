@@ -9,6 +9,7 @@ const Ticket = () => {
     const { bookingCart, setShowCart, showMessage, showAlert, setAlert, ticket, setTicket, addToCart, URL } = ticketCart();
     const { match } = useParams();
     const navigate = useNavigate();
+    //
 
     const ticketTypes = [
         { label: "General",     priceKey: "general_price",    seatKey: "total_general_seats",    color: "#6b7280", accent: "#9ca3af" },
