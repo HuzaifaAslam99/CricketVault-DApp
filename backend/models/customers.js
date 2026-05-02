@@ -32,7 +32,7 @@ const CustomerSchema = new mongoose.Schema({
     city: { type: String, required: true },
     address: { type: String, required: true },
     
-    ticket_id: { type: String },
+    booking_id: { type: String },
     total_amount: { type: Number },
     total_tickets: { type: Number },
 

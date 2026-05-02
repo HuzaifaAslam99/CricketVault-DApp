@@ -427,7 +427,7 @@
       "inputs": [
         {
           "internalType": "string",
-          "name": "_ticketId",
+          "name": "_bookingId",
           "type": "string"
         },
         {
@@ -512,7 +512,7 @@
           "components": [
             {
               "internalType": "string",
-              "name": "ticketId",
+              "name": "bookingId",
               "type": "string"
             },
             {
@@ -625,7 +625,7 @@
     },
     {
       "inputs": [],
-      "name": "nextTicketId",
+      "name": "nextBookingId",
       "outputs": [
         {
           "internalType": "uint256",
@@ -804,7 +804,7 @@
       "outputs": [
         {
           "internalType": "string",
-          "name": "ticketId",
+          "name": "bookingId",
           "type": "string"
         },
         {

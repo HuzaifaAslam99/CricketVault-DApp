@@ -71,7 +71,7 @@ const handleCheckout = async (e) => {
             }))
         });
 
-        const { ticket_id, ipfs_hash } = response.data;
+        const { booking_id, ipfs_hash } = response.data;
 
         // 3. Convert Grand Total USD to ETH
         const currentPrice = await fetchEthPrice();
@@ -80,7 +80,7 @@ const handleCheckout = async (e) => {
 
         // 4. Single Blockchain Transaction
         setProcessingMessage(`Confirming total payment in MetaMask...`);
-        const tx = await contract.buyTicket(ticket_id, ipfs_hash, { 
+        const tx = await contract.buyTicket(booking_id, ipfs_hash, { 
             value: amountEthWei,
             gasLimit: 800000 
         });
@@ -89,17 +89,17 @@ const handleCheckout = async (e) => {
         const receipt = await tx.wait();
 
         // 5. Verify & Cleanup
-        const verifyPayment = (id) => {
+        const verifyPayment = (booking_id) => {
             const interval = setInterval(async () => {
                 try {
-                    const res = await axios.get(`${URL}/api/bookingVerify/${id}`);
+                    const res = await axios.get(`${URL}/api/bookingVerify/${booking_id}`);
                     if (res.data.status === "paid") clearInterval(interval);
                 } catch (err) {
                     console.error("Polling error:", err);
                 }
             }, 2000);
         };
-        verifyPayment(ticket_id);
+        verifyPayment(booking_id);
 
         clearCart();
         setShowCart(false);

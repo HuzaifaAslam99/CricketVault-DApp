@@ -10,7 +10,7 @@ const pinata = new PinataSDK({ pinataJwt: process.env.PINATA_JWT });
 
 router.post("/customersBooking/initiate", async (req, res) => {
     try {
-        const ticketId = crypto.randomBytes(4).toString("hex");
+        const bookingId = crypto.randomBytes(4).toString("hex");
 
         const ipfsMetadata = {
             wallet_address: req.body.wallet_address,
@@ -39,7 +39,7 @@ router.post("/customersBooking/initiate", async (req, res) => {
             total_amount: req.body.amount,
             wallet_address: req.body.wallet_address,
             bookings: req.body.bookings,
-            ticket_id: ticketId,
+            booking_id: bookingId,
             ipfs_hash: cid 
         });
 
@@ -57,11 +57,11 @@ router.post("/customersBooking/initiate", async (req, res) => {
 
 
 
-router.get("/bookingVerify/:ticketId", async (req, res) => {
+router.get("/bookingVerify/:bookingId", async (req, res) => {
     try {
-        const { ticketId } = req.params;
+        const { bookingId } = req.params;
 
-        const findCustomer = await Customer.findOne({ticket_id: ticketId});
+        const findCustomer = await Customer.findOne({booking_id: bookingId});
         res.status(200).json(findCustomer);
 
     } catch (err) {
