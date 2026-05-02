@@ -281,13 +281,13 @@ const CustomerTicket = () => {
                         <div className="flex flex-col items-center gap-1.5 flex-1">
                           <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden p-1">
                             <img
-                              src={ticket.match_details?.img_team1}
+                              src={ticket.match_data?.img_team1}
                               className="w-full h-full object-contain"
-                              alt={ticket.match_details?.team1}
+                              alt={ticket.match_data?.team1}
                             />
                           </div>
                           <span className="text-white font-800 text-xs uppercase tracking-wider text-center">
-                            {ticket.match_details?.team1}
+                            {ticket.match_data?.team1}
                           </span>
                         </div>
 
@@ -298,13 +298,13 @@ const CustomerTicket = () => {
                         <div className="flex flex-col items-center gap-1.5 flex-1">
                           <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden p-1">
                             <img
-                              src={ticket.match_details?.img_team2}
+                              src={ticket.match_data?.img_team2}
                               className="w-full h-full object-contain"
-                              alt={ticket.match_details?.team2}
+                              alt={ticket.match_data?.team2}
                             />
                           </div>
                           <span className="text-white font-800 text-xs uppercase tracking-wider text-center">
-                            {ticket.match_details?.team2}
+                            {ticket.match_data?.team2}
                           </span>
                         </div>
                       </div>
@@ -333,7 +333,7 @@ const CustomerTicket = () => {
                             Venue
                           </p>
                           <p className="text-white font-700 text-xs">
-                            {ticket.match_details?.venue}
+                            {ticket.match_data?.venue}
                           </p>
                         </div>
                         <div className="text-right">
@@ -341,7 +341,7 @@ const CustomerTicket = () => {
                             Date
                           </p>
                           <p className="text-white font-700 text-xs">
-                            {ticket.match_details?.date}
+                            {ticket.match_data?.date}
                           </p>
                         </div>
                         <div>
