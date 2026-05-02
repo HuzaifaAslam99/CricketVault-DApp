@@ -70,7 +70,7 @@ const Ticket = () => {
             {/* Header */}
             <header className="sticky top-0 z-40 border-b border-white/5 bg-black/60 backdrop-blur-md">
                 <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-                    <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-white/40 hover:text-white transition-colors text-sm font-600 uppercase tracking-widest">
+                    <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-white/40 hover:text-white transition-colors text-sm font-600 uppercase tracking-widest cursor-pointer">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
