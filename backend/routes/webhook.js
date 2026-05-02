@@ -61,12 +61,12 @@ router.post("/webhook", verifyAlchemy, async (req, res) => {
       if (!decoded || decoded.name !== "Deposit") continue;
 
       // ✅ Access by index — always safe regardless of ABI naming
-      const ticketId      = decoded.args[0];          // string  (non-indexed)
+      const bookingId      = decoded.args[0];          // string  (non-indexed)
       const buyerAddress  = decoded.args[1];          // address (indexed)
       const amountWei     = decoded.args[2];          // uint256 (non-indexed)
 
       console.log("Decoded Deposit:", {
-        ticketId,
+        bookingId,
         buyerAddress,
         amountEth: ethers.formatEther(amountWei),
         transactionHash,
@@ -74,7 +74,7 @@ router.post("/webhook", verifyAlchemy, async (req, res) => {
 
 
       const updatedBooking = await Customer.findOneAndUpdate(
-        { ticket_id: ticketId },
+        { booking_id: bookingId },
         {
           status: "paid",
           transactionHash: transactionHash,

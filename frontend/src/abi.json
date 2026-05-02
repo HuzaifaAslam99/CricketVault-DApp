@@ -203,7 +203,7 @@
         {
           "indexed": false,
           "internalType": "string",
-          "name": "ticketId",
+          "name": "bookingId",
           "type": "string"
         },
         {
