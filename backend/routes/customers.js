@@ -1,4 +1,5 @@
 const Customer = require('../models/customers');
+const Tickets = require('../models/tickets');
 const crypto = require("crypto")
 const express = require("express")
 const router = express.Router()
@@ -78,7 +79,7 @@ router.get("/customersBooking/wallet/:wallet_address", async (req, res) => {
         // const findCustomer = await Customer.find({wallet_address: wallet_address}).populate({bookings[]});
         const findCustomer = await Customer.find({ wallet_address: wallet_address }) .populate({
             path: 'bookings.match_id', 
-            model: 'Ticket'
+            model: Tickets
         });
         res.status(200).json(findCustomer);
 
