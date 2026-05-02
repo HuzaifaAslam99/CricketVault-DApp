@@ -192,7 +192,8 @@ const CustomerTicket = () => {
                         </div>
  
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {tickets.bookings.map((booking, index) => (
+                            {tickets.map((ticket, index) => 
+                            { return ticket.bookings.map((booking, index) => (
                                 <div
                                     key={index}
                                     className="fade-up relative bg-[#111118] border border-white/8 rounded-xl overflow-hidden hover:border-[#d4af37]/30 transition-all duration-300"
@@ -274,6 +275,8 @@ const CustomerTicket = () => {
                                     </div>
                                 </div>
                             ))}
+                            )}
+
                         </div>
                     </>
                 )}
