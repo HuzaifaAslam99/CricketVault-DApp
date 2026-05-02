@@ -28,52 +28,7 @@ const Dashboard = () => {
 
     return (
         <div className="min-h-screen bg-[#0a0a0f] font-['Barlow_Condensed',sans-serif]">
-            {/* Google Fonts */}
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800;900&family=Barlow:wght@300;400;500&display=swap');
-                
-                .card-glow:hover {
-                    box-shadow: 0 0 40px rgba(212, 175, 55, 0.15), 0 20px 60px rgba(0,0,0,0.5);
-                }
-                .shimmer {
-                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
-                    background-size: 200% 100%;
-                    animation: shimmer 2.5s infinite;
-                }
-                @keyframes shimmer {
-                    0% { background-position: -200% 0; }
-                    100% { background-position: 200% 0; }
-                }
-                .ticket-card {
-                    animation: fadeUp 0.5s ease both;
-                }
-                @keyframes fadeUp {
-                    from { opacity: 0; transform: translateY(24px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                .badge-pulse {
-                    animation: pulse 2s infinite;
-                }
-                @keyframes pulse {
-                    0%, 100% { opacity: 1; }
-                    50% { opacity: 0.6; }
-                }
-                .cart-bounce {
-                    animation: bounce 0.4s cubic-bezier(0.34,1.5,0.64,1);
-                }
-                @keyframes bounce {
-                    from { transform: scale(0.7); }
-                    to { transform: scale(1); }
-                }
-                .noise-bg::before {
-                    content: '';
-                    position: fixed;
-                    inset: 0;
-                    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
-                    pointer-events: none;
-                    z-index: 0;
-                }
-            `}</style>
+
 
             <div className="noise-bg">
                 {/* ── HEADER ── */}
