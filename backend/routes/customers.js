@@ -75,7 +75,7 @@ router.get("/customersBooking/wallet/:wallet_address", async (req, res) => {
     try {
         const { wallet_address } = req.params;
 
-        const findCustomer = await Customer.findOne({wallet_address: wallet_address});
+        const findCustomer = await Customer.find({wallet_address: wallet_address});
         res.status(200).json(findCustomer);
 
     } catch (err) {
