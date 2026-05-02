@@ -25,7 +25,7 @@ const CustomerSchema = new mongoose.Schema({
     // match_id: {type: Number},
 
     bookings: [{
-        match_id: { 
+        match: { 
             type: Number, 
             ref: 'Tickets', 
             required: true 

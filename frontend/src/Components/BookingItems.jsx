@@ -65,7 +65,7 @@ const handleCheckout = async (e) => {
             wallet_address: signer.address,
             amount: grandTotal, 
             bookings: bookingCart.map(item => ({
-                match_id: item.ticket.match,
+                match: item.ticket.match,
                 ticket_category: item.category.label,
                 quantity: item.quantity
             }))
