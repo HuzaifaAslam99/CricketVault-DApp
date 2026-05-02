@@ -54,6 +54,8 @@ const handleCheckout = async (e) => {
 
         setProcessingMessage("Initiating secure booking...");
 
+        console.log("Match: ",item.ticket.match)
+
         // 2. Single API Call for the entire cart
         const response = await axios.post(`${URL}/api/customersBooking/initiate`, {
             firstName: customer.firstName,

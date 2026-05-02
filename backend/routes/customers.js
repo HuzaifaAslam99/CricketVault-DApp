@@ -17,7 +17,7 @@ router.post("/customersBooking/initiate", async (req, res) => {
             total_tickets: req.body.quantity,
             ticket_category: req.body.category,
             total_amount: req.body.amount,
-            ticket_id: ticketId,
+            booking_id: bookingId,
         };
 
         const upload = await pinata.upload.json(ipfsMetadata);
