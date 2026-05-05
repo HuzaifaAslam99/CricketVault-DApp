@@ -9,6 +9,8 @@ const BookingSchema = new mongoose.Schema({
     },
     ticket_category: { type: String, required: true },
     quantity: { type: Number, required: true },
+    individual_tickets: [String]
+    
 }, {
     toJSON: { virtuals: true },
     toObject: { virtuals: true }

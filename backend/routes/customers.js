@@ -12,6 +12,19 @@ router.post("/customersBooking/initiate", async (req, res) => {
     try {
         const bookingId = crypto.randomBytes(4).toString("hex");
 
+        const processedBookings = req.body.bookings.map((booking) => {
+            const ticketIds = [];
+            for (let i = 0; i < booking.quantity; i++) {
+                // Generates a unique 8-character hex ID for every single ticket
+                ticketIds.push(crypto.randomBytes(4).toString("hex"));
+            }
+            
+            return {
+                ...booking,
+                individual_tickets: ticketIds // New array storing multiple ticket_ids
+            };
+        });
+
         const ipfsMetadata = {
             wallet_address: req.body.wallet_address,
             total_tickets: req.body.quantity,
