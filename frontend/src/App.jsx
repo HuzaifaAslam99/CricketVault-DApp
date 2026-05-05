@@ -15,6 +15,7 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/match/:match" element={<Ticket />} />
           <Route path="/my-tickets" element={<CustomerTicket />} />
+          <Route path="/my-tickets/detail" element={<TicketDetailPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

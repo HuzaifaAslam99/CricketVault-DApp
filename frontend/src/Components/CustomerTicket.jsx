@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { ethers } from "ethers";
 import { ticketCart } from "../TicketContext";
+import TicketDetailPage from "./pages/TicketDetailPage";
 import icc from "../assets/img/icc.png";
 
 const CustomerTicket = () => {
@@ -386,22 +387,21 @@ const CustomerTicket = () => {
                       </div>
 
                       {/* Booking ID */}
-                      <div className="bg-white/3 border border-white/5 rounded-lg px-3 py-2 flex items-center justify-between gap-2">
-                        <div className="min-w-0">
-                          <p className="text-white/30 text-[9px] font-700 uppercase tracking-widest mb-0.5">
-                            Booking ID
-                          </p>
-                          <p className="text-white/50 text-[10px] font-mono truncate">
-                            {ticket.booking_id}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => window.print()}
-                          className="shrink-0 border border-white/10 hover:border-[#d4af37]/40 text-white/30 hover:text-[#d4af37] text-[10px] font-700 uppercase tracking-widest px-3 py-1.5 rounded-sm transition-all"
+                       <Link to="/my-tickets/detail" state={{ ticket, booking, ticketTypes }} onClick={(e) => e.stopPropagation()}
+                        className="bg-white/3 border border-white/5 hover:border-[#d4af37]/30 rounded-lg px-3 py-2 flex items-center justify-between gap-2 transition-all group/link"
                         >
-                          Print
-                        </button>
-                      </div>
+                          <div className="min-w-0">
+                            <p className="text-white/30 text-[9px] font-700 uppercase tracking-widest mb-0.5">
+                              Booking ID
+                            </p>
+                            <p className="text-white/50 text-[10px] font-mono truncate">
+                              {ticket.booking_id}
+                            </p>
+                          </div>
+                          <span className="shrink-0 border border-white/10 group-hover/link:border-[#d4af37]/40 text-white/30 group-hover/link:text-[#d4af37] text-[10px] font-700 uppercase tracking-widest px-3 py-1.5 rounded-sm transition-all">
+                              View →
+                          </span>
+                        </Link>
                     </div>
                   </div>
                 )),
