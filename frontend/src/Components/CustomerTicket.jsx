@@ -392,7 +392,7 @@ const CustomerTicket = () => {
                             Booking ID
                           </p>
                           <p className="text-white/50 text-[10px] font-mono truncate">
-                            {ticket.ticket_id}
+                            {ticket.booking_id}
                           </p>
                         </div>
                         <button
