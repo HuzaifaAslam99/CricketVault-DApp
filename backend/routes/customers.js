@@ -17,7 +17,6 @@ router.post("/customersBooking/initiate", async (req, res) => {
             for (let i = 0; i < booking.quantity; i++) {
                 // Generates a unique 8-character hex ID for every single ticket
                 ticketIds.push(crypto.randomBytes(4).toString("hex"));
-                ticketIds.push("hello");
             }
             
             return {
@@ -52,7 +51,7 @@ router.post("/customersBooking/initiate", async (req, res) => {
             ticket_category: req.body.category,
             total_amount: req.body.amount,
             wallet_address: req.body.wallet_address,
-            bookings: req.body.bookings,
+            bookings: processedBookings,
             booking_id: bookingId,
             ipfs_hash: cid 
         });
