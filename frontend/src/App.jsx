@@ -1,6 +1,7 @@
 import Ticket from "./Components/Ticket";
 import Dashboard from "./Components/Dashboard";
 import CustomerTicket from "./Components/CustomerTicket";
+import TicketDetailPage from "./Components/TicketDetailPage";
  
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { TicketProvider } from "./TicketContext";
