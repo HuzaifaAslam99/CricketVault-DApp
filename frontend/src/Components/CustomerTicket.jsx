@@ -386,7 +386,7 @@ const CustomerTicket = () => {
 
                       </div>
 
-                      {/* Booking ID */}
+                      {/* Booking ID */}//
                        <Link to="/my-tickets/detail" state={{ ticket, booking, ticketTypes }} onClick={(e) => e.stopPropagation()}
                         className="bg-white/3 border border-white/5 hover:border-[#d4af37]/30 rounded-lg px-3 py-2 flex items-center justify-between gap-2 transition-all group/link"
                         >
