@@ -194,7 +194,7 @@ const handleCheckout = async (e) => {
                             </div>
                             <button
                                 onClick={() => setStep("form")}
-                                className="w-full bg-[#d4af37] hover:bg-[#e8c547] text-black font-900 text-sm uppercase tracking-widest py-3.5 rounded-xl transition-all active:scale-[0.98]"
+                                className="w-full bg-[#d4af37] hover:bg-[#e8c547] text-black font-900 text-sm uppercase tracking-widest py-3.5 rounded-xl transition-all active:scale-[0.98] cursor-pointer"
                             >
                                 Proceed to Checkout →
                             </button>
