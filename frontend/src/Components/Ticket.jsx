@@ -89,7 +89,7 @@ const Ticket = () => {
 
     const handleAdd = (category) => {
         addToCart(ticket, category);
-        setAlert(true);
+        // setAlert(true);
     };
 
     if (!ticket) return (
@@ -105,13 +105,13 @@ const Ticket = () => {
         <div className="min-h-screen bg-[#0a0a0f] font-['Barlow_Condensed',sans-serif] text-white">
 
             {/* Alert Toast — only show "Added to cart", not booking confirmation */}
-            <div className={`fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ease-[cubic-bezier(0.34,1.2,0.64,1)] ${showAlert ? 'top-5' : '-top-20'}`}>
+            {/* <div className={`fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ease-[cubic-bezier(0.34,1.2,0.64,1)] ${showAlert ? 'top-5' : '-top-20'}`}>
                 <div className="bg-[#111] border border-[#d4af37]/40 rounded-lg px-5 py-3 flex items-center gap-3 shadow-2xl whitespace-nowrap">
                     <span className="text-[#d4af37] text-lg">✓</span>
                     <span className="text-white text-sm font-600">Added to cart!</span>
                     <button onClick={() => setAlert(false)} className="text-white/30 hover:text-white ml-2 text-xs cursor-pointer">✕</button>
                 </div>
-            </div>
+            </div> */}
 
             {/* Header */}
             <header className="sticky top-0 z-40 border-b border-white/5 bg-black/60 backdrop-blur-md">
