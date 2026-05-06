@@ -1,7 +1,6 @@
 Website Link-> https://cricket-vault-dapp.vercel.app
 
 CricketVault: Decentralized Event Ticketing DApp
-Live DemoBlockchainIPFS
 
 A decentralized ticketing platform for cricket events that guarantees ticket authenticity and prevents scalping using blockchain technology. Accepts Native ETH and ERC-20 USDC.
 
