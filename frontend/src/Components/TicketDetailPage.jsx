@@ -128,12 +128,9 @@ const TicketDetailPage = () => {
                   <div className="px-5 pt-4 pb-4">
 
                     {/* Header */}
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-[#1a4a8a] flex items-center justify-center text-[9px] text-[#d4af37] font-900">ICC</div>
-                        <span className="text-white/35 text-[9px] font-700 uppercase tracking-[0.3em]">ICC Champions Trophy 2025</span>
-                      </div>
-                      <span className="bg-green-500/12 border border-green-500/20 text-green-400 text-[9px] font-800 uppercase tracking-[0.2em] px-2 py-0.5 rounded">● Confirmed</span>
+                    <div className="flex items-center gap-2 mb-3">
+                      <img src={icc} className="h-6 w-6 object-contain" alt="ICC" />
+                      <span className="text-white/35 text-[9px] font-700 uppercase tracking-[0.3em]">ICC Champions Trophy 2025</span>
                     </div>
 
                     {/* Teams */}
@@ -158,20 +155,14 @@ const TicketDetailPage = () => {
                       <Field label="Category"  value={booking.ticket_category} gold />
                       <Field label="Venue"     value={m.venue} />
                       <Field label="Date"      value={m.date} />
-                      <Field label="Customer"  value={`${ticket.customer_first_name} ${ticket.customer_last_name}`} />
                       <Field label="Match No." value={`#${booking.match}`} />
-                      <Field label="Ticket"    value={`${seatNum} / ${qty}`} gold />
                     </div>
 
                     {/* ID Bar */}
-                    <div className="bg-white/3 border border-white/6 rounded-lg px-3 py-2 flex items-center justify-between gap-3">
-                      <div>
+                    <div className="bg-white/3 border border-white/6 rounded-lg px-3 py-2 flex items-center justify-center">
+                      <div className="text-center">
                         <p className="text-white/28 text-[8px] font-700 uppercase tracking-[0.28em] mb-0.5">Ticket ID</p>
                         <p className="text-white/70 text-[11px] font-mono tracking-wide">{ticketId}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-white/28 text-[8px] font-700 uppercase tracking-[0.28em] mb-0.5">Booking ID</p>
-                        <p className="text-white/50 text-[11px] font-mono tracking-wide">{ticket.booking_id}</p>
                       </div>
                     </div>
 
@@ -181,16 +172,18 @@ const TicketDetailPage = () => {
                 {/* Right Stub */}
                 <div className="w-36 bg-[#0f1520] border-l border-dashed border-white/10 flex flex-col items-center justify-between py-4 px-3">
                   <div className="text-center">
-                    <p className="text-white/28 text-[8.5px] font-700 uppercase tracking-[0.3em] mb-1">Match No.</p>
-                    <p className="text-white font-900 text-[22px] leading-none tracking-wider">#{booking.match}</p>
+                    <p className="text-white/28 text-[8.5px] font-700 uppercase tracking-[0.3em] mb-1">Booking ID</p>
+                    <p className="text-white/70 text-[9px] font-mono tracking-wide break-all">{ticket.booking_id}</p>
                   </div>
 
                   <div className="w-4/5 border-t border-dashed border-white/10" />
 
                   <div className="text-center">
+
                     <div className="p-1 bg-white/4 rounded-md inline-block">
                       <MiniQR value={`${ticketId}-SEAT${seatNum}`} size={76} />
                     </div>
+
                     <p className="text-white/20 text-[7.5px] font-700 uppercase tracking-[0.2em] mt-1.5">Scan to verify</p>
                   </div>
 
@@ -198,6 +191,7 @@ const TicketDetailPage = () => {
                     <Barcode value={ticketId} width={116} height={28} />
                     <p className="text-white/18 text-[7px] font-mono mt-1 tracking-wider">{ticketId?.slice(-12)}</p>
                   </div>
+
                 </div>
 
               </div>
