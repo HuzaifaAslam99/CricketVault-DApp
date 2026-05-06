@@ -200,7 +200,7 @@ const handleCheckout = async (e) => {
                             </button>
                             <button
                                 onClick={() => setShowCart(false)}
-                                className="w-full text-white/30 font-700 text-xs uppercase tracking-widest py-2 hover:text-white/60 transition-colors"
+                                className="w-full text-white/30 font-700 text-xs uppercase tracking-widest py-2 hover:text-white/60 transition-colors cursor-pointer"
                             >
                                 Continue Browsing
                             </button>
@@ -273,7 +273,7 @@ const handleCheckout = async (e) => {
                             <button
                                 type="button"
                                 onClick={() => setStep("cart")}
-                                className="w-full text-white/30 font-700 text-xs uppercase tracking-widest py-2 hover:text-white/60 transition-colors"
+                                className="w-full text-white/30 font-700 text-xs uppercase tracking-widest py-2 hover:text-white/60 transition-colors cursor-pointer"
                             >
                                 ← Back to Cart
                             </button>
