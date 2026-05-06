@@ -1,11 +1,11 @@
 Website Link-> https://cricket-vault-dapp.vercel.app
 
-CricketVault: Decentralized Event Ticketing DApp
+CricketVault DApp: Decentralized Event Ticketing DApp
 
 A decentralized ticketing platform for cricket events that guarantees ticket authenticity and prevents scalping using blockchain technology. Accepts Native ETH and ERC-20 USDC.
 
 The Reusable Architecture
-Instead of building a standard app, I designed a scalable, event-driven Web3 payment engine. This is the same bulletproof backend architecture used in my CryptoFoodWebApp project, proving its reliability across entirely different Web3 domains (E-commerce vs. Event Ticketing).
+Instead of building a standard app, I designed a scalable, event-driven Web3 payment engine. This is the same bulletproof backend architecture used in my Web3 Food Cart DApp project, proving its reliability across entirely different Web3 domains (E-commerce vs. Event Ticketing).
 
 The Core Challenge: Gas Fees & Data Storage
 In the Food App, storing small strings (Order IDs) on-chain was cheap. However, for event tickets, we need to store dynamic metadata (Seat numbers, Match details, Gate entries). Storing large JSON strings directly on a Solidity smart contract is prohibitively expensive due to gas limits.
