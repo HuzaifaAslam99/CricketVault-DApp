@@ -30,7 +30,7 @@ User selects tickets
        ↓
 MongoDB saves order as PENDING
        ↓
-Ticket metadata (Match, Seat, Tier) uploaded to Pinata → returns IPFS CID
+Ticket metadata (Match, Ticket Category) uploaded to Pinata → returns IPFS CID
        ↓
 Smart contract stores IPFS hash + payment amount on Base Sepolia
 (User can safely close the browser here)
@@ -107,7 +107,7 @@ Web3 domains — E-commerce vs. Event Ticketing.
 | Feature | Implementation |
 |---------|---------------|
 | Webhook HMAC Verification | Validates Alchemy's cryptographic signature before updating MongoDB |
-| IPFS Immutability | Ticket metadata (seat, match) cannot be altered once stored on Pinata |
+| IPFS Immutability | Ticket metadata (match, ticket category) cannot be altered once stored on Pinata |
 | CORS Protection | Strict origin checking to prevent unauthorized API access |
 | Non-Custodial | Platform has zero control over user funds or purchased tickets |
 
