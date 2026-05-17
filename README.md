@@ -24,22 +24,26 @@ Store ticket JSON on IPFS → store only the 32-byte hash on-chain ✅
 ---
 
 ## How It Works
+
+```
 User selects tickets
-↓
+       ↓
 MongoDB saves order as PENDING
-↓
+       ↓
 Ticket metadata (Match, Seat, Tier) uploaded to Pinata → returns IPFS CID
-↓
+       ↓
 Smart contract stores IPFS hash + payment amount on Base Sepolia
 (User can safely close the browser here)
-↓
+       ↓
+Smart contract emits Deposit event on Base Sepolia
+       ↓
 Alchemy Webhook catches the payment event → pushes to Express backend
-↓
+       ↓
 Backend verifies HMAC cryptographic signature
-↓
+       ↓
 MongoDB updates ticket status to PAID ✅
+```
 
----
 
 ## Smart Contract
 | Contract | Network | Address |
@@ -51,7 +55,7 @@ MongoDB updates ticket status to PAID ✅
 ## Reusable Architecture
 
 This project uses the same bulletproof event-driven payment 
-engine as my [Web3 Food Cart DApp](https://github.com/HuzaifaAslam99/FoodAppMernBase), 
+engine as my [Web3 Food Ordering DApp](https://github.com/HuzaifaAslam99/FoodAppMernBase), 
 proving the architecture is reliable across entirely different 
 Web3 domains — E-commerce vs. Event Ticketing.
 
@@ -154,20 +158,20 @@ VITE_CONTRACT_ADDRESS=0xD67cF1e96A8CEBfa44743156891C6660455A0Aa7
 
 ---
 
-## Project Structure
-CricketVault-DApp/
+```
+FoodAppMernBase/
 ├── frontend/          # React + Vite + Tailwind
 │   └── src/
 │       ├── components/
 │       └── pages/
 ├── backend/           # Node.js + Express
 │   └── routes/
-│       └── webhook.js # HMAC verification logic
+│       └── webhook.js
 └── blockchain/        # Solidity + Hardhat
     └── contracts/
         └── CricketVault.sol
+```
 
----
 
 ## Author
 **Huzaifa** — Web3 Full-Stack Engineer  
