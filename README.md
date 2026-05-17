@@ -141,7 +141,7 @@ npm run dev
 cd blockchain
 npm install
 npx hardhat compile
- npx hardhat ignition deploy ./ignition/modules/CricketVault.ts --network baseSepolia
+npx hardhat ignition deploy ./ignition/modules/CricketVault.ts --network baseSepolia
 ```
 
 ### Environment Variables
