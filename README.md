@@ -1,53 +1,176 @@
-Website Link-> https://cricket-vault-dapp.vercel.app
+# CricketVault DApp — Decentralized Event Ticketing
 
-CricketVault DApp: Decentralized Event Ticketing DApp
+A decentralized ticketing platform for cricket events that 
+guarantees ticket authenticity and prevents scalping using 
+blockchain technology. Accepts both Native ETH and ERC-20 USDC.
 
-A decentralized ticketing platform for cricket events that guarantees ticket authenticity and prevents scalping using blockchain technology. Accepts Native ETH and ERC-20 USDC.
+## Live Demo
+[cricket-vault-dapp.vercel.app](https://cricket-vault-dapp.vercel.app)
 
-The Reusable Architecture
-Instead of building a standard app, I designed a scalable, event-driven Web3 payment engine. This is the same bulletproof backend architecture used in my Web3 Food Cart DApp project, proving its reliability across entirely different Web3 domains (E-commerce vs. Event Ticketing).
+---
 
-The Core Challenge: Gas Fees & Data Storage
-In the Food App, storing small strings (Order IDs) on-chain was cheap. However, for event tickets, we need to store dynamic metadata (Seat numbers, Match details, Gate entries). Storing large JSON strings directly on a Solidity smart contract is prohibitively expensive due to gas limits.
+## The Core Challenge: Gas Fees & On-Chain Data Storage
 
-The Solution: I integrated Pinata (IPFS) to handle heavy data off-chain, while keeping the proof of purchase on-chain.
+For event tickets, we need to store dynamic metadata — seat 
+numbers, match details, gate entries. Storing large JSON 
+strings directly in Solidity is prohibitively expensive.
 
-User selects tickets → Data is saved to MongoDB as PENDING.
-Ticket metadata (Match, Seat, Tier) is formatted as JSON and uploaded to Pinata, returning a cryptographic CID (IPFS Hash).
-The smart contract is called, storing only this small IPFS hash and the payment amount on the Base Sepolia blockchain.
-Backend independently verifies the payment via Alchemy Webhooks (HMAC verified) before updating MongoDB to PAID.
+**The naive approach:**
+Store full ticket JSON on-chain → costs hundreds of dollars in gas ❌
 
-The Stack
-Frontend (Off-Chain UI)
-React.js & Vite: Fast, dynamic single-page application for browsing matches and selecting seats.
-Tailwind CSS: Responsive, mobile-first styling.
-Ethers.js: Seamless integration with MetaMask for wallet connectivity and transaction triggering.
-Backend & Database (Off-Chain Logic)
-Node.js & Express: Handles ticket inventory, user auth, and Webhook verification logic.
-MongoDB: Stores user profiles, match schedules, and the PENDING ➔ PAID state machine.
-Pinata (IPFS): Decentralized storage for ticket metadata JSON files.
+**The solution:**
+Store ticket JSON on IPFS → store only the 32-byte hash on-chain ✅
 
-Blockchain (On-Chain Settlement)
-Solidity: Smart contract logic mapping IPFS hashes to wallet addresses upon successful USDC/ETH payment.
-Base Sepolia (L2): Low-cost, high-speed execution layer.
-Hardhat: Compilation, testing, and deployment framework.
-Alchemy: RPC provider and Webhook listener for server-side event indexing.
+---
 
-Hybrid Data Strategy
+## How It Works
+User selects tickets
+↓
+MongoDB saves order as PENDING
+↓
+Ticket metadata (Match, Seat, Tier) uploaded to Pinata → returns IPFS CID
+↓
+Smart contract stores IPFS hash + payment amount on Base Sepolia
+(User can safely close the browser here)
+↓
+Alchemy Webhook catches the payment event → pushes to Express backend
+↓
+Backend verifies HMAC cryptographic signature
+↓
+MongoDB updates ticket status to PAID ✅
 
-What is stored in MongoDB? (Off-Chain)
-Event Catalog: Cricket matches, teams, dates, and ticket prices.
-User Data: Fan profiles and delivery/contact information.
-Order State: Tracks if a ticket is PENDING, PAID, or SCANNED.
+---
 
-What is stored on the Blockchain? (On-Chain)
-IPFS CID (Content Identifier): The immutable hash pointing to the full ticket JSON metadata stored on Pinata.
-Payment Amount: The exact USDC or ETH value paid.
-Buyer Wallet Address: The true, non-custodial owner of the ticket.
-Transaction Hash: The permanent, unalterable proof of purchase.
+## Smart Contract
+| Contract | Network | Address |
+|----------|---------|---------|
+| CricketVault | Base Sepolia | [`0xD67cF1e96A8CEBfa44743156891C6660455A0Aa7`](https://sepolia.basescan.org/address/0xD67cF1e96A8CEBfa44743156891C6660455A0Aa7) |
 
-Security Features
-Webhook HMAC Verification: Prevents fake "payment successful" payloads from hitting the backend. Express server verifies Alchemy's cryptographic signature before touching MongoDB.
-IPFS Immutability: Once a ticket's metadata is uploaded to Pinata and the hash is saved on Base, the ticket details (seat, match) cannot be altered by the platform or hackers.
-CORS Protection: Strict origin checking to prevent unauthorized API access.
-Non-Custodial: The platform has no control over the user's funds or their purchased tickets.
+---
+
+## Reusable Architecture
+
+This project uses the same bulletproof event-driven payment 
+engine as my [Web3 Food Cart DApp](https://github.com/HuzaifaAslam99/FoodAppMernBase), 
+proving the architecture is reliable across entirely different 
+Web3 domains — E-commerce vs. Event Ticketing.
+
+---
+
+## Tech Stack
+
+### Frontend (Off-Chain UI)
+| Technology | Purpose |
+|-----------|---------|
+| React.js + Vite | Fast, dynamic single-page application |
+| Tailwind CSS | Responsive, mobile-first styling |
+| Ethers.js | MetaMask wallet connectivity + transaction triggering |
+
+### Backend & Database (Off-Chain Logic)
+| Technology | Purpose |
+|-----------|---------|
+| Node.js + Express | Ticket inventory, auth, webhook verification |
+| MongoDB | User profiles, match schedules, order state |
+| Pinata (IPFS) | Decentralized storage for ticket metadata JSON |
+
+### Blockchain (On-Chain Settlement)
+| Technology | Purpose |
+|-----------|---------|
+| Solidity | Maps IPFS hashes to wallet addresses on payment |
+| Base Sepolia (L2) | Low-cost, high-speed execution layer |
+| Hardhat | Compilation, testing, deployment |
+| Alchemy | RPC provider + Webhook listener |
+
+---
+
+## Hybrid Data Strategy
+
+### MongoDB stores (Off-Chain)
+- Event catalog — cricket matches, teams, dates, ticket prices
+- User data — fan profiles, contact information
+- Order state machine — PENDING → PAID → SCANNED
+
+### Blockchain stores (On-Chain)
+- IPFS CID — immutable hash pointing to full ticket JSON on Pinata
+- Payment amount — exact USDC or ETH value paid
+- Buyer wallet address — true, non-custodial ticket owner
+- Transaction hash — permanent, unalterable proof of purchase
+
+---
+
+## Security Features
+
+| Feature | Implementation |
+|---------|---------------|
+| Webhook HMAC Verification | Validates Alchemy's cryptographic signature before updating MongoDB |
+| IPFS Immutability | Ticket metadata (seat, match) cannot be altered once stored on Pinata |
+| CORS Protection | Strict origin checking to prevent unauthorized API access |
+| Non-Custodial | Platform has zero control over user funds or purchased tickets |
+
+---
+
+## Performance
+- Load tested to **12,000 req/min peak** throughput
+- Averaging **1,800 req/min** under sustained load
+- Tested using [Loader.io](https://loader.io)
+
+---
+
+## Run Locally
+
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Backend
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+### Smart Contract
+```bash
+cd blockchain
+npm install
+npx hardhat compile
+ npx hardhat ignition deploy ./ignition/modules/CricketVault.ts --network baseSepolia
+```
+
+### Environment Variables
+```bash
+# Backend .env
+MONGODB_URI=your_mongodb_uri
+ALCHEMY_WEBHOOK_SECRET=your_secret
+CORS_ORIGIN= https://cricket-vault-dapp.vercel.app/
+
+# Frontend .env
+VITE_BACKEND_URL= https://cricket-vault-dapp-backend.vercel.app
+VITE_CONTRACT_ADDRESS=0xD67cF1e96A8CEBfa44743156891C6660455A0Aa7
+```
+
+---
+
+## Project Structure
+CricketVault-DApp/
+├── frontend/          # React + Vite + Tailwind
+│   └── src/
+│       ├── components/
+│       └── pages/
+├── backend/           # Node.js + Express
+│   └── routes/
+│       └── webhook.js # HMAC verification logic
+└── blockchain/        # Solidity + Hardhat
+    └── contracts/
+        └── CricketVault.sol
+
+---
+
+## Author
+**Huzaifa** — Web3 Full-Stack Engineer  
+[Portfolio](https://portfolio-website-vr3v.vercel.app) · 
+[GitHub](https://github.com/HuzaifaAslam99) · 
+[LinkedIn](https://linkedin.com/in/huzaifa-aslam-4845152aa)
