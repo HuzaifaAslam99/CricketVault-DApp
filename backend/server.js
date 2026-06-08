@@ -17,11 +17,15 @@ const corsOptions = {
     credentials: true 
 };
 
-// Reverting to clean state
-
 app.use(cors(corsOptions));
 
-// app.use(express.json());
+
+
+// TEMPORARY ROUTE FOR LOAD.IO VERIFICATION (Delete after verifying!)
+
+// app.get('/loaderio-070909ea141525027451409c1624b0d8.txt', (req, res) => {
+//   res.send('loaderio-070909ea141525027451409c1624b0d8');
+// });
 
 
 
@@ -34,9 +38,6 @@ app.use(express.json({
   }
 }));
 
-
-
-// console.log("My DB URL is: ", process.env.TICKET_BOOKING_DB_URI);
 
 
 let isConnected = false;
@@ -52,11 +53,6 @@ app.use(async (req, res, next) => {
   await connectDB();
   next();
 });
-
-
-// mongoose.connect(process.env.Ticket_Booking_DB_URI)
-//   .then(() => console.log('Successfully connected to Ticket Booking Database'))
-//   .catch(err => console.error('Database connection error:', err));
 
 
 app.get("/", (req, res) => {

@@ -7,7 +7,7 @@ import { contract_address, ticket_abi } from "../constants";
 const BookingItems = () => {
     const { bookingCart, setShowCart, setMessage, setAlert, removeFromCart, updateQuantity, clearCart, URL } = ticketCart();
 
-    const [step, setStep] = useState("cart"); // "cart" | "form" | "processing"
+    const [step, setStep] = useState("cart");
     const [processingMessage, setProcessingMessage] = useState("Initiating booking...");
     const [customer, setCustomer] = useState({
         firstName: "", lastName: "", email: "", phone: "", city: "", address: ""
@@ -41,7 +41,7 @@ const handleCheckout = async (e) => {
     }
 
     try {
-        // 1. Ensure correct network
+        
         const targetChainId = "0x14a34";
         const currentChainId = await window.ethereum.request({ method: "eth_chainId" });
         if (currentChainId !== targetChainId) {
@@ -54,9 +54,7 @@ const handleCheckout = async (e) => {
 
         setProcessingMessage("Initiating secure booking...");
 
-        // console.log("Match: ",item.ticket.match)
-
-        // 2. Single API Call for the entire cart
+      
         const response = await axios.post(`${URL}/api/customersBooking/initiate`, {
             firstName: customer.firstName,
             lastName: customer.lastName,
@@ -75,12 +73,12 @@ const handleCheckout = async (e) => {
 
         const { booking_id, ipfs_hash } = response.data;
 
-        // 3. Convert Grand Total USD to ETH
+       
         const currentPrice = await fetchEthPrice();
         const ethValue = (grandTotal / currentPrice).toFixed(18);
         const amountEthWei = ethers.parseEther(ethValue);
 
-        // 4. Single Blockchain Transaction
+
         setProcessingMessage(`Confirming total payment in MetaMask...`);
         const tx = await contract.buyTicket(booking_id, ipfs_hash, { 
             value: amountEthWei,
